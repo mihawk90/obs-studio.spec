@@ -1,0 +1,15 @@
+--- plugins/obs-ffmpeg/obs-ffmpeg-mux.c	2016-05-01 17:56:21.000000000 -0600
++++ obs-ffmpeg-mux-1.c	2016-05-03 01:06:09.810745024 -0600
+@@ -174,8 +174,11 @@
+ 		aencoders[num_tracks] = aencoder;
+ 		num_tracks++;
+ 	}
+-
++#ifdef FFMPEG_MUX_FIXED
++	dstr_init_copy(cmd, FFMPEG_MUX_FIXED);
++#else
+ 	dstr_init_move_array(cmd, obs_module_file(FFMPEG_MUX));
++#endif
+ 	dstr_insert_ch(cmd, 0, '\"');
+ 	dstr_cat(cmd, "\" \"");
+ 	dstr_cat_dstr(cmd, &stream->path);
