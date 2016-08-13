@@ -1,12 +1,15 @@
 Name:           obs-studio
 Version:        0.15.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/jp9000/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         obs-ffmpeg-mux.patch
+
+# Arm gcc has no xmmintrin.h file
+ExclusiveArch: i686 x86_64
 
 BuildRequires:  gcc-objc
 BuildRequires:  cmake
@@ -112,6 +115,9 @@ fi
 
 
 %changelog
+* Sat Aug 13 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-2
+- Disable build for ARM (Arm gcc has no xmmintrin.h file)
+
 * Fri Aug 12 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-1
 - Fix release tag (0.x release is for git releases)
 
