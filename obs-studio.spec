@@ -1,6 +1,6 @@
 Name:           obs-studio
 Version:        0.15.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -55,14 +55,13 @@ Header files for Open Broadcaster Software
 
 %prep
 %setup -q
-%patch0 -p0
+%patch0 -p1
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
-export CPPFLAGS=-DFFMPEG_MUX_FIXED=\"%{_libexecdir}/obs-plugins/obs-ffmpeg/ffmpeg-mux\"
 %cmake -DOBS_VERSION_OVERRIDE=%{version} -DUNIX_STRUCTURE=1
 %make_build
 
@@ -115,6 +114,9 @@ fi
 
 
 %changelog
+* Fri Aug 26 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-3
+- Actually define FFMPEG_MUX_FIXED (fixes 'command not found' when trying to record)
+
 * Sat Aug 13 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-2
 - Disable build for ARM (Arm gcc has no xmmintrin.h file)
 

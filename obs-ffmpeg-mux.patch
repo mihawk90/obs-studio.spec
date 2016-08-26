@@ -1,5 +1,5 @@
---- plugins/obs-ffmpeg/obs-ffmpeg-mux.c	2016-05-01 17:56:21.000000000 -0600
-+++ obs-ffmpeg-mux-1.c	2016-05-03 01:06:09.810745024 -0600
+--- a/plugins/obs-ffmpeg/obs-ffmpeg-mux.c
++++ b/plugins/obs-ffmpeg/obs-ffmpeg-mux.c
 @@ -174,8 +174,11 @@
  		aencoders[num_tracks] = aencoder;
  		num_tracks++;
@@ -13,3 +13,14 @@
  	dstr_insert_ch(cmd, 0, '\"');
  	dstr_cat(cmd, "\" \"");
  	dstr_cat_dstr(cmd, &stream->path);
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,6 +7,7 @@
+ include(ObsHelpers)
+ include(ObsCpack)
+ include(GNUInstallDirs)
++add_definitions(-DFFMPEG_MUX_FIXED=\"/usr/libexec/obs-plugins/obs-ffmpeg/ffmpeg-mux\")
+ 
+ if(MSVC AND NOT EXISTS "${CMAKE_BINARY_DIR}/ALL_BUILD.vcxproj.user")
+ 	file(GENERATE
+
