@@ -32,6 +32,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  vlc-devel
 BuildRequires:  alsa-lib-devel
 BuildRequires:  systemd-devel
+BuildRequires:  doxygen
 Requires:       ffmpeg x264
 
 %description
@@ -131,6 +132,8 @@ fi
 %changelog
 * Sat Oct 01 2016 Martin Gansser <martinkg@fedoraproject.org> - 0.16.2-1
 - Updated to 0.16.2
+- Build doxygen html documentation
+- Added BR doxygen
 
 * Fri Aug 26 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-3
 - Actually define FFMPEG_MUX_FIXED (fixes 'command not found' when trying to record)
