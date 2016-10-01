@@ -1,6 +1,6 @@
 Name:           obs-studio
-Version:        0.15.4
-Release:        3%{?dist}
+Version:        0.16.2
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -52,6 +52,15 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description devel
 Header files for Open Broadcaster Software
 
+%package        doc
+Summary:        Documentation files for %{name}
+Group:          Documentation
+BuildArch:      noarch
+
+%description    doc
+The %{name}-doc package contains html documentation
+that use %{name}.
+
 
 %prep
 %setup -q
@@ -64,6 +73,9 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version} -DUNIX_STRUCTURE=1
 %make_build
+
+# build docs
+doxygen
 
 %install
 %make_install
@@ -95,7 +107,7 @@ fi
 
 %files
 %doc README
-%license obs/data/license/gplv2.txt
+%license UI/data/license/gplv2.txt
 %license COPYING
 %{_bindir}/obs
 %{_datadir}/applications/obs.desktop
@@ -112,8 +124,14 @@ fi
 %{_libdir}/*.so
 %{_includedir}/obs/
 
+%files doc
+%doc docs/html
+
 
 %changelog
+* Sat Oct 01 2016 Martin Gansser <martinkg@fedoraproject.org> - 0.16.2-1
+- Updated to 0.16.2
+
 * Fri Aug 26 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.15.4-3
 - Actually define FFMPEG_MUX_FIXED (fixes 'command not found' when trying to record)
 
