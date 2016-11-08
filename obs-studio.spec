@@ -1,15 +1,11 @@
-%global gitdate 20161017
-%global commit 4505d5ac33b6c5d4bb828dd62b027452a6ac262d
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
-
 Name:           obs-studio
-Version:        0.16.2
-Release:        2.%{gitdate}git%{shortcommit}%{?dist}
+Version:        0.16.5
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/jp9000/obs-studio/archive/%{commit}/obs-studio-%{commit}.tar.gz
+Source0:        https://github.com/jp9000/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         obs-ffmpeg-mux.patch
 
 # Arm gcc has no xmmintrin.h file
@@ -69,7 +65,7 @@ that use %{name}.
 
 
 %prep
-%setup -qn %{name}-%{commit}
+%setup -q
 %patch0 -p1
 
 # rpmlint reports E: hardcoded-library-path
@@ -135,6 +131,9 @@ fi
 
 
 %changelog
+* Tue Nov 08 2016 Momcilo Medic <fedorauser@fedoraproject.org> - 0.16.5-1
+- Updated to 0.16.5
+
 * Tue Oct 18 2016 Momcilo Medic <fedorauser@fedoraproject.org> - 0.16.2-2.20161018git4505d5a
 - Updated to git to resolve unversioned shared object
 - Identified speexdsp-devel as a dependency
