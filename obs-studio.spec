@@ -1,5 +1,5 @@
 Name:           obs-studio
-Version:        0.16.5
+Version:        0.16.6
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Sun Nov 27 2016 Momcilo Medic <fedorauser@fedoraproject.org> - 0.16.6-1
+- Updated to 0.16.6
+
 * Tue Nov 08 2016 Momcilo Medic <fedorauser@fedoraproject.org> - 0.16.5-1
 - Updated to 0.16.5
 
