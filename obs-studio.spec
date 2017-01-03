@@ -1,12 +1,11 @@
 Name:           obs-studio
-Version:        0.16.6
+Version:        17.0.0
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/jp9000/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Patch0:         obs-ffmpeg-mux.patch
 
 # Arm gcc has no xmmintrin.h file
 ExclusiveArch: i686 x86_64
@@ -66,7 +65,6 @@ that use %{name}.
 
 %prep
 %setup -q
-%patch0 -p1
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -131,6 +129,11 @@ fi
 
 
 %changelog
+* Tue Jan 03 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 17.0.0-1
+- Upstream fixed arch-dependent-file-in-usr-share
+- Removed obs-ffmpeg-mux.patch
+- Updated to 17.0.0
+
 * Sun Nov 27 2016 Momcilo Medic <fedorauser@fedoraproject.org> - 0.16.6-1
 - Updated to 0.16.6
 
