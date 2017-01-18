@@ -1,5 +1,5 @@
 Name:           obs-studio
-Version:        17.0.0
+Version:        17.0.2
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -129,6 +129,9 @@ fi
 
 
 %changelog
+* Wed Jan 18 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 17.0.2-1
+- Updated to 17.0.2
+
 * Tue Jan 03 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 17.0.0-1
 - Upstream fixed arch-dependent-file-in-usr-share
 - Removed obs-ffmpeg-mux.patch
