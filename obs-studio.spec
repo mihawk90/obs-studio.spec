@@ -1,6 +1,6 @@
 Name:           obs-studio
-Version:        17.0.2
-Release:        2%{?dist}
+Version:        18.0.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Wed Mar 1 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 18.0.0-1
+- Updated to 18.0.0
+
 * Mon Jan 30 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 17.0.2-2
 - Reintroduced obs-ffmpeg-mux.patch
 - Fixes #4436
