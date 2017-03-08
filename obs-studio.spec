@@ -1,5 +1,5 @@
 Name:           obs-studio
-Version:        18.0.0
+Version:        18.0.1
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Wed Mar 8 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 18.0.1-1
+- Updated to 18.0.1
+
 * Wed Mar 1 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 18.0.0-1
 - Updated to 18.0.0
 
