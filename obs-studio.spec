@@ -1,6 +1,6 @@
 Name:           obs-studio
-Version:        18.0.1
-Release:        3%{?dist}
+Version:        18.0.2
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -108,7 +108,7 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor >&/dev/null || :
 
 %files
-%doc README
+%doc README.rst
 %license UI/data/license/gplv2.txt
 %license COPYING
 %{_bindir}/obs
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Sat May 6 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 18.0.2-1
+- Updated to 18.0.2
+
 * Sat Apr 29 2017 Leigh Scott <leigh123linux@googlemail.com> - 18.0.1-3
 - Rebuild for ffmpeg update
 
