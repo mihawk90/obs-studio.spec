@@ -1,6 +1,6 @@
 Name:           obs-studio
 Version:        18.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Wed May 17 2017 Leigh Scott <leigh123linux@googlemail.com> - 18.0.2-2
+- Rebuild for ffmpeg update
+
 * Sat May 6 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 18.0.2-1
 - Updated to 18.0.2
 
