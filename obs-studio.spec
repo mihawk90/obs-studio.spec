@@ -1,5 +1,5 @@
 Name:           obs-studio
-Version:        19.0.2
+Version:        19.0.3
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -131,6 +131,9 @@ fi
 
 
 %changelog
+* Sat Jul 08 2017 Martin Gansser <martinkg@fedoraproject.org> - 19.0.3-1
+- Updated to 19.0.3
+
 * Mon May 22 2017 Momcilo Medic <fedorauser@fedoraproject.org> - 19.0.2-1
 - Updated to 19.0.2
 
