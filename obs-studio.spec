@@ -1,5 +1,5 @@
 Name:           obs-studio
-Version:        20.0.1
+Version:        20.1.3
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -65,8 +65,7 @@ that use %{name}.
 
 
 %prep
-%setup -q
-%patch0 -p0
+%autosetup -p0
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -92,11 +91,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %post libs -p /sbin/ldconfig
 
 %post
-/usr/bin/update-desktop-database >&/dev/null || :
 /usr/bin/touch --no-create %{_datadir}/icons/hicolor >&/dev/null || :
 
 %postun
-/usr/bin/update-desktop-database >&/dev/null || :
 if [ $1 -eq 0 ]; then
   /usr/bin/touch --no-create %{_datadir}/icons/hicolor >&/dev/null || :
   /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor >&/dev/null || :
@@ -131,6 +128,9 @@ fi
 
 
 %changelog
+* Fri Dec 08 2017 Leigh Scott <leigh123linux@googlemail.com> - 20.1.3-1
+- Updated to 20.1.3
+
 * Tue Oct 17 2017 Martin Gansser <martinkg@fedoraproject.org> - 20.0.1-1
 - Updated to 20.0.1
 
