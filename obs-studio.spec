@@ -1,6 +1,6 @@
 Name:           obs-studio
 Version:        20.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -128,6 +128,9 @@ fi
 
 
 %changelog
+* Sun Dec 31 2017 Sérgio Basto <sergio@serjux.com> - 20.1.3-2
+- Mass rebuild for x264 and x265
+
 * Fri Dec 08 2017 Leigh Scott <leigh123linux@googlemail.com> - 20.1.3-1
 - Updated to 20.1.3
 
