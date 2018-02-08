@@ -1,6 +1,6 @@
 Name:           obs-studio
 Version:        21.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -12,7 +12,8 @@ Patch0:         obs-ffmpeg-mux.patch
 ExclusiveArch: i686 x86_64
 
 BuildRequires:  gcc-objc
-BuildRequires:  cmake
+BuildRequires:  cmake3
+BuildRequires:  ninja-build
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  ffmpeg-devel
@@ -72,14 +73,14 @@ that use %{name}.
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
-%cmake -DOBS_VERSION_OVERRIDE=%{version} -DUNIX_STRUCTURE=1
-%make_build
+%cmake3 -DOBS_VERSION_OVERRIDE=%{version} -DUNIX_STRUCTURE=1 -GNinja
+%ninja_build
 
 # build docs
 doxygen
 
 %install
-%make_install
+%ninja_install
 
 mkdir -p %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/
 mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
@@ -88,21 +89,7 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/obs.desktop
 
-%post libs -p /sbin/ldconfig
-
-%post
-/usr/bin/touch --no-create %{_datadir}/icons/hicolor >&/dev/null || :
-
-%postun
-if [ $1 -eq 0 ]; then
-  /usr/bin/touch --no-create %{_datadir}/icons/hicolor >&/dev/null || :
-  /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor >&/dev/null || :
-fi
-
-%postun libs -p /sbin/ldconfig
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor >&/dev/null || :
+%ldconfig_scriptlets libs
 
 %files
 %doc README.rst
@@ -128,6 +115,10 @@ fi
 
 
 %changelog
+* Thu Feb 08 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.0.2-2
+- Fix scriptlets
+- Use ninja to build
+
 * Wed Feb 07 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 21.0.2-1
 - Updated to 21.0.2
 
