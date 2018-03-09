@@ -19,7 +19,6 @@ BuildRequires:  cmake3
 BuildRequires:  ninja-build
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel
-BuildRequires:  faac-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  pulseaudio-libs-devel
@@ -123,7 +122,6 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %changelog
 * Fri Mar 09 2018 Martin Gansser <martinkg@fedoraproject.org> - 21.0.3-1
 - Update to 21.0.3
-- Add BR faac-devel
 - Add BR python3-devel
 - Add bytecompile with Python 3 %%global __python %%{__python3}A
 
