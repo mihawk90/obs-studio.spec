@@ -1,6 +1,9 @@
+# bytecompile with Python 3
+%global __python %{__python3}
+
 Name:           obs-studio
-Version:        21.0.2
-Release:        4%{?dist}
+Version:        21.0.3
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -16,6 +19,7 @@ BuildRequires:  cmake3
 BuildRequires:  ninja-build
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel
+BuildRequires:  faac-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  pulseaudio-libs-devel
@@ -35,6 +39,7 @@ BuildRequires:  alsa-lib-devel
 BuildRequires:  systemd-devel
 BuildRequires:  doxygen
 BuildRequires:  speexdsp-devel
+BuildRequires:  python3-devel
 Requires:       ffmpeg x264
 
 %description
@@ -73,7 +78,9 @@ that use %{name}.
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
-%cmake3 -DOBS_VERSION_OVERRIDE=%{version} -DUNIX_STRUCTURE=1 -GNinja
+%cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
+        -DUNIX_STRUCTURE=1 -GNinja \
+        -DENABLE_SCRIPTING:BOOL=FALSE
 %ninja_build
 
 # build docs
@@ -113,8 +120,13 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %files doc
 %doc docs/html
 
-
 %changelog
+* Fri Mar 09 2018 Martin Gansser <martinkg@fedoraproject.org> - 21.0.3-1
+- Update to 21.0.3
+- Add BR faac-devel
+- Add BR python3-devel
+- Add bytecompile with Python 3 %%global __python %%{__python3}A
+
 * Thu Mar 08 2018 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 21.0.2-4
 - Rebuilt for new ffmpeg snapshot
 
