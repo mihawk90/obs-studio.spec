@@ -2,13 +2,13 @@
 %global __python %{__python3}
 
 Name:           obs-studio
-Version:        21.0.3
+Version:        21.1.0
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/jp9000/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         obs-ffmpeg-mux.patch
 
 # Arm gcc has no xmmintrin.h file
@@ -39,7 +39,8 @@ BuildRequires:  systemd-devel
 BuildRequires:  doxygen
 BuildRequires:  speexdsp-devel
 BuildRequires:  python3-devel
-Requires:       ffmpeg x264
+Requires:       ffmpeg
+Requires:       x264
 
 %description
 Open Broadcaster Software is free and open source
@@ -120,6 +121,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Mon Mar 19 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.0-1
+- Update to 21.1.0
+
 * Fri Mar 09 2018 Martin Gansser <martinkg@fedoraproject.org> - 21.0.3-1
 - Update to 21.0.3
 - Add BR python3-devel
