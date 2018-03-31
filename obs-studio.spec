@@ -2,7 +2,7 @@
 %global __python %{__python3}
 
 Name:           obs-studio
-Version:        21.1.0
+Version:        21.1.1
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -121,6 +121,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Sat Mar 31 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.1-1
+- Update to 21.1.1
+
 * Mon Mar 19 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.0-1
 - Update to 21.1.0
 
