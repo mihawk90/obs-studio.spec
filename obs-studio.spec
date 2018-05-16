@@ -2,7 +2,7 @@
 %global __python %{__python3}
 
 Name:           obs-studio
-Version:        21.1.1
+Version:        21.1.2
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -39,6 +39,8 @@ BuildRequires:  systemd-devel
 BuildRequires:  doxygen
 BuildRequires:  speexdsp-devel
 BuildRequires:  python3-devel
+
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
 Requires:       x264
 
@@ -48,14 +50,13 @@ software for video recording and live streaming.
 
 %package libs
 Summary: Open Broadcaster Software Studio libraries
-Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description libs
 Library files for Open Broadcaster Software
 
 %package devel
 Summary: Open Broadcaster Software Studio header files
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description devel
 Header files for Open Broadcaster Software
@@ -80,7 +81,8 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 %build
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DENABLE_SCRIPTING:BOOL=FALSE
+        -DENABLE_SCRIPTING:BOOL=FALSE \
+        -DOpenGL_GL_PREFERENCE=GLVND
 %ninja_build
 
 # build docs
@@ -121,6 +123,10 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Wed May 16 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.2-1
+- Update to 21.1.2
+- Fix requires
+
 * Sat Mar 31 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.1-1
 - Update to 21.1.1
 
