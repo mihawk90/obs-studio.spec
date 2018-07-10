@@ -3,7 +3,7 @@
 
 Name:           obs-studio
 Version:        21.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -123,6 +123,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Tue Jul 10 2018 Miro Hrončok <mhroncok@redhat.com> - 21.1.2-2
+- Rebuilt for Python 3.7
+
 * Wed May 16 2018 Leigh Scott <leigh123linux@googlemail.com> - 21.1.2-1
 - Update to 21.1.2
 - Fix requires
