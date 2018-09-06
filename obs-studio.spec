@@ -2,7 +2,7 @@
 %global __python %{__python3}
 
 Name:           obs-studio
-Version:        22.0.1
+Version:        22.0.3
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -123,6 +123,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Thu Sep 7 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-1
+- Updated to 22.0.3
+
 * Wed Aug 22 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.1-1
 - Updated to 22.0.1
 
