@@ -3,7 +3,7 @@
 
 Name:           obs-studio
 Version:        22.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -123,6 +123,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Thu Oct 04 2018 Sérgio Basto <sergio@serjux.com> - 22.0.3-2
+- Mass rebuild for x264 and/or x265
+
 * Thu Sep 7 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-1
 - Updated to 22.0.3
 
