@@ -3,7 +3,7 @@
 
 Name:           obs-studio
 Version:        22.0.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -39,6 +39,10 @@ BuildRequires:  systemd-devel
 BuildRequires:  doxygen
 BuildRequires:  speexdsp-devel
 BuildRequires:  python3-devel
+BuildRequires:  luajit-devel
+BuildRequires:  swig
+BuildRequires:  libxcb-devel
+BuildRequires:  mbedtls-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
@@ -81,7 +85,6 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 %build
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DENABLE_SCRIPTING:BOOL=FALSE \
         -DOpenGL_GL_PREFERENCE=GLVND
 %ninja_build
 
@@ -112,6 +115,8 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 
 %files libs
 %{_libdir}/obs-plugins/
+%{_libdir}/obs-scripting/
+%{_libdir}/libobs-scripting.so
 %{_libdir}/*.so.*
 
 %files devel
@@ -123,10 +128,14 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Wed Jan 9 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-3
+- Fixed missing dependencies
+- Enabled scripting support
+
 * Thu Oct 04 2018 Sérgio Basto <sergio@serjux.com> - 22.0.3-2
 - Mass rebuild for x264 and/or x265
 
-* Thu Sep 7 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-1
+* Fri Sep 7 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-1
 - Updated to 22.0.3
 
 * Wed Aug 22 2018 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.1-1
