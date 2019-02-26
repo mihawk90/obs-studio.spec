@@ -2,8 +2,8 @@
 %global __python %{__python3}
 
 Name:           obs-studio
-Version:        22.0.3
-Release:        3%{?dist}
+Version:        23.0.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -97,6 +97,7 @@ doxygen
 mkdir -p %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/
 mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
       %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/ffmpeg-mux
+mv -f %{buildroot}/%{_prefix}/lib/pkgconfig %{buildroot}/%{_libdir}/pkgconfig
 
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/obs.desktop
@@ -121,6 +122,7 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 
 %files devel
 %{_libdir}/cmake/LibObs/
+%{_libdir}/pkgconfig/libobs.pc
 %{_libdir}/*.so
 %{_includedir}/obs/
 
@@ -128,6 +130,9 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 %doc docs/html
 
 %changelog
+* Mon Feb 25 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 23.0.0-1
+- Updated to 23.0.0
+
 * Wed Jan 9 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 22.0.3-3
 - Fixed missing dependencies
 - Enabled scripting support
