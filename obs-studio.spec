@@ -83,21 +83,25 @@ that use %{name}.
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
+mkdir -p build
+pushd build
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DOpenGL_GL_PREFERENCE=GLVND
+        -DOpenGL_GL_PREFERENCE=GLVND ..
 %ninja_build
+popd
 
 # build docs
 doxygen
 
+
 %install
-%ninja_install
+%ninja_install -C build
 
 mkdir -p %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/
 mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
       %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/ffmpeg-mux
-mv -f %{buildroot}/%{_prefix}/lib/pkgconfig %{buildroot}/%{_libdir}/pkgconfig
+mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/obs.desktop
