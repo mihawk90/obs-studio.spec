@@ -3,7 +3,7 @@
 
 Name:           obs-studio
 Version:        23.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -136,6 +136,9 @@ mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 %doc docs/html
 
 %changelog
+* Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 23.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Mon Feb 25 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 23.0.0-1
 - Updated to 23.0.0
 
