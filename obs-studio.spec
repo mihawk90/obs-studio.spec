@@ -1,9 +1,13 @@
+%if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
 %global __python %{__python3}
+%else
+%global __python %{__python2}
+%endif
 
 Name:           obs-studio
 Version:        23.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -37,8 +41,16 @@ BuildRequires:  vlc-devel
 BuildRequires:  alsa-lib-devel
 BuildRequires:  systemd-devel
 BuildRequires:  doxygen
+%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  speexdsp-devel
+%else
+BuildRequires:  speex-devel
+%endif
+%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  python3-devel
+%else
+BuildRequires:  python2-devel
+%endif
 BuildRequires:  luajit-devel
 BuildRequires:  swig
 BuildRequires:  libxcb-devel
@@ -136,6 +148,10 @@ mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 %doc docs/html
 
 %changelog
+* Mon Mar 18 2019 Xavier Bachelot <xavier@bachelot.org> - 23.0.2-3
+- Fix BR: on speex/speexdsp for EL7.
+- Fix BR: on python for EL7.
+
 * Tue Mar 12 2019 Sérgio Basto <sergio@serjux.com> - 23.0.2-2
 - Mass rebuild for x264
 
