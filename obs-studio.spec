@@ -7,7 +7,7 @@
 
 Name:           obs-studio
 Version:        23.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -117,6 +117,10 @@ mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
 mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 %endif
 
+# Add missing files to enable the build of obs-ndi
+install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
+install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
+
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/obs.desktop
 
@@ -148,6 +152,10 @@ mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 %doc docs/html
 
 %changelog
+* Sun Apr 07 2019 Martin Gansser <martinkg@fedoraproject.org> - 23.0.2-4
+- Add obs-frontend-api.h to devel subpkg, to enable build of obs-ndi
+- Add ObsPluginHelpers.cmake to devel subpkg, to enable build of obs-ndi
+
 * Mon Mar 18 2019 Xavier Bachelot <xavier@bachelot.org> - 23.0.2-3
 - Fix BR: on speex/speexdsp for EL7.
 - Fix BR: on python for EL7.
