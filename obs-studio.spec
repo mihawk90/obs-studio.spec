@@ -6,8 +6,8 @@
 %endif
 
 Name:           obs-studio
-Version:        23.0.2
-Release:        4%{?dist}
+Version:        23.1.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -33,6 +33,7 @@ BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtx11extras-devel
+BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  jansson-devel
 BuildRequires:  jack-audio-connection-kit-devel
 BuildRequires:  libcurl-devel
@@ -152,6 +153,9 @@ install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmak
 %doc docs/html
 
 %changelog
+* Mon Apr 08 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 23.1.0-1
+- Updated to 23.1.0
+
 * Sun Apr 07 2019 Martin Gansser <martinkg@fedoraproject.org> - 23.0.2-4
 - Add obs-frontend-api.h to devel subpkg, to enable build of obs-ndi
 - Add ObsPluginHelpers.cmake to devel subpkg, to enable build of obs-ndi
