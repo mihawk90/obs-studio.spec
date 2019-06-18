@@ -6,14 +6,13 @@
 %endif
 
 Name:           obs-studio
-Version:        23.1.0
+Version:        23.2.1
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Patch0:         obs-ffmpeg-mux.patch
 
 # Arm gcc has no xmmintrin.h file
 ExclusiveArch: i686 x86_64
@@ -56,6 +55,7 @@ BuildRequires:  luajit-devel
 BuildRequires:  swig
 BuildRequires:  libxcb-devel
 BuildRequires:  mbedtls-devel
+BuildRequires:  libappstream-glib
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
@@ -111,9 +111,6 @@ doxygen
 %install
 %ninja_install -C build
 
-mkdir -p %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/
-mv -f %{buildroot}/%{_datadir}/obs/obs-plugins/obs-ffmpeg/ffmpeg-mux \
-      %{buildroot}/%{_libexecdir}/obs-plugins/obs-ffmpeg/ffmpeg-mux
 %ifarch x86_64
 mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
 %endif
@@ -123,7 +120,8 @@ install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
 
 %check
-/usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/obs.desktop
+/usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
 %ldconfig_scriptlets libs
 
@@ -132,10 +130,11 @@ install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmak
 %license UI/data/license/gplv2.txt
 %license COPYING
 %{_bindir}/obs
-%{_datadir}/applications/obs.desktop
-%{_datadir}/icons/hicolor/256x256/apps/obs.png
+%{_bindir}/obs-ffmpeg-mux
+%{_datadir}/metainfo/com.obsproject.Studio.appdata.xml
+%{_datadir}/applications/com.obsproject.Studio.desktop
+%{_datadir}/icons/hicolor/256x256/apps/com.obsproject.Studio.png
 %{_datadir}/obs/
-%{_libexecdir}/obs-plugins/
 
 %files libs
 %{_libdir}/obs-plugins/
@@ -153,6 +152,9 @@ install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmak
 %doc docs/html
 
 %changelog
+* Tue Jun 18 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 23.2.1-1
+- Updated to 23.2.1
+
 * Mon Apr 08 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 23.1.0-1
 - Updated to 23.1.0
 
