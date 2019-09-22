@@ -6,8 +6,8 @@
 %endif
 
 Name:           obs-studio
-Version:        23.2.1
-Release:        3%{?dist}
+Version:        24.0.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -111,10 +111,6 @@ doxygen
 %install
 %ninja_install -C build
 
-%ifarch x86_64
-mv -f %{buildroot}/%{_prefix}/lib/pkgconfig/ %{buildroot}/%{_libdir}/
-%endif
-
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
@@ -152,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Sun Sep 22 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.1-1
+- Updated to 24.0.1
+
 * Sat Aug 24 2019 Leigh Scott <leigh123linux@gmail.com> - 23.2.1-3
 - Rebuild for python-3.8
 
