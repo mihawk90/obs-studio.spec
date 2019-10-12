@@ -6,7 +6,7 @@
 %endif
 
 Name:           obs-studio
-Version:        24.0.1
+Version:        24.0.3
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -148,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Sat Oct 12 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.3-1
+- Updated to 24.0.3
+
 * Sun Sep 22 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.1-1
 - Updated to 24.0.1
 
