@@ -7,7 +7,7 @@
 
 Name:           obs-studio
 Version:        24.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -17,7 +17,7 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version}.tar.
 # Arm gcc has no xmmintrin.h file
 ExclusiveArch: i686 x86_64
 
-BuildRequires:  gcc-objc
+BuildRequires:  gcc
 BuildRequires:  cmake3
 BuildRequires:  ninja-build
 BuildRequires:  libX11-devel
@@ -148,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Sun Oct 13 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.3-2
+- Switched BR gcc-objc to gcc to unify SPEC file across builds
+
 * Sat Oct 12 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.3-1
 - Updated to 24.0.3
 
