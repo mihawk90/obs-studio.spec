@@ -7,7 +7,7 @@
 
 Name:           obs-studio
 Version:        24.0.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -148,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 24.0.3-3
+- Mass rebuild for x264
+
 * Sun Oct 13 2019 Momcilo Medic <fedorauser@fedoraproject.org> - 24.0.3-2
 - Switched BR gcc-objc to gcc to unify SPEC file across builds
 
