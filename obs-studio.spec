@@ -6,8 +6,8 @@
 %endif
 
 Name:           obs-studio
-Version:        24.0.3
-Release:        3%{?dist}
+Version:        24.0.5
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -148,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Sun Dec 22 2019 Leigh Scott <leigh123linux@googlemail.com> - 24.0.5-1
+- Updated to 24.0.5
+
 * Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 24.0.3-3
 - Mass rebuild for x264
 
