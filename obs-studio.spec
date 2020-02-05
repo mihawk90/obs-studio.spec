@@ -7,7 +7,7 @@
 
 Name:           obs-studio
 Version:        24.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -148,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Wed Feb 05 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 24.0.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Sun Dec 22 2019 Leigh Scott <leigh123linux@googlemail.com> - 24.0.5-1
 - Updated to 24.0.5
 
