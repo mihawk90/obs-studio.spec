@@ -1,3 +1,4 @@
+%define _legacy_common_support 1
 %if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
 %global __python %{__python3}
