@@ -7,8 +7,8 @@
 %endif
 
 Name:           obs-studio
-Version:        24.0.6
-Release:        2%{?dist}
+Version:        25.0.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -149,6 +149,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Fri Mar 20 2020 Martin Gansser <martinkg@fedoraproject.org> - 25.0.1-1
+- Update to 25.0.1
+
 * Sat Feb 22 2020 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 24.0.6-2
 - Rebuild for ffmpeg-4.3 git
 
