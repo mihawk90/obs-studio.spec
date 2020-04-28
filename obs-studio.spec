@@ -7,13 +7,13 @@
 %endif
 
 Name:           obs-studio
-Version:        25.0.6
+Version:        25.0.8
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Arm gcc has no xmmintrin.h file
 ExclusiveArch: i686 x86_64
@@ -149,6 +149,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Tue Apr 28 2020 Leigh Scott <leigh123linux@googlemail.com> - 25.0.8-1
+- Updated to 25.0.8
+
 * Thu Apr 16 2020 Leigh Scott <leigh123linux@gmail.com> - 25.0.6-1
 - Updated to 25.0.6
 
