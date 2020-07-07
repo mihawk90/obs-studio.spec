@@ -8,7 +8,7 @@
 
 Name:           obs-studio
 Version:        25.0.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -149,6 +149,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Tue Jul 07 2020 Sérgio Basto <sergio@serjux.com> - 25.0.8-3
+- Mass rebuild for x264
+
 * Sat May 30 2020 Leigh Scott <leigh123linux@gmail.com> - 25.0.8-2
 - Rebuild for python-3.9
 
