@@ -1,3 +1,4 @@
+%undefine __cmake_in_source_build
 %define _legacy_common_support 1
 %if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
@@ -8,7 +9,7 @@
 
 Name:           obs-studio
 Version:        25.0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -97,20 +98,21 @@ that use %{name}.
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
-mkdir -p build
-pushd build
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DOpenGL_GL_PREFERENCE=GLVND ..
-%ninja_build
-popd
+        -DOpenGL_GL_PREFERENCE=GLVND \
+%if 0%{?rhel}
+         -S . -B %{_target_platform}
+%endif
+%cmake3_build
+
 
 # build docs
 doxygen
 
 
 %install
-%ninja_install -C build
+%cmake3_install
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
@@ -149,6 +151,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Thu Aug 06 2020 Leigh Scott <leigh123linux@gmail.com> - 25.0.8-4
+- Improve compatibility with new CMake macro
+
 * Tue Jul 07 2020 Sérgio Basto <sergio@serjux.com> - 25.0.8-3
 - Mass rebuild for x264
 
