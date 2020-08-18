@@ -9,7 +9,7 @@
 
 Name:           obs-studio
 Version:        25.0.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -151,6 +151,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc docs/html
 
 %changelog
+* Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 25.0.8-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Thu Aug 06 2020 Leigh Scott <leigh123linux@gmail.com> - 25.0.8-4
 - Improve compatibility with new CMake macro
 
