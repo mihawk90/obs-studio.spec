@@ -89,10 +89,7 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 %build
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DOpenGL_GL_PREFERENCE=GLVND \
-%if 0%{?rhel}
-         -S . -B %{_target_platform}
-%endif
+        -DOpenGL_GL_PREFERENCE=GLVND
 %cmake3_build
 
 
