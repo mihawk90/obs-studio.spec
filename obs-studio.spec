@@ -61,6 +61,9 @@ BuildRequires:  swig
 BuildRequires:  libxcb-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  libappstream-glib
+%if 0%{?el7}
+BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
+%endif
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
@@ -85,6 +88,9 @@ Header files for Open Broadcaster Software
 
 
 %prep
+%if 0%{?el7}
+. /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
 %autosetup -p0
 
 # rpmlint reports E: hardcoded-library-path
@@ -92,6 +98,9 @@ Header files for Open Broadcaster Software
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 %build
+%if 0%{?el7}
+. /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
         -DOpenGL_GL_PREFERENCE=GLVND
@@ -106,6 +115,9 @@ install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
 
 %check
+%if 0%{?el7}
+. /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
