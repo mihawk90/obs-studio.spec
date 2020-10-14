@@ -1,5 +1,4 @@
 %undefine __cmake_in_source_build
-%define _legacy_common_support 1
 %if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
 %global __python %{__python3}
@@ -8,8 +7,8 @@
 %endif
 
 Name:           obs-studio
-Version:        25.0.8
-Release:        5%{?dist}
+Version:        26.0.2
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -42,7 +41,6 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  vlc-devel
 BuildRequires:  alsa-lib-devel
 BuildRequires:  systemd-devel
-BuildRequires:  doxygen
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  speexdsp-devel
 %else
@@ -80,15 +78,6 @@ Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 %description devel
 Header files for Open Broadcaster Software
 
-%package        doc
-Summary:        Documentation files for %{name}
-Group:          Documentation
-BuildArch:      noarch
-
-%description    doc
-The %{name}-doc package contains html documentation
-that use %{name}.
-
 
 %prep
 %autosetup -p0
@@ -105,10 +94,6 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
          -S . -B %{_target_platform}
 %endif
 %cmake3_build
-
-
-# build docs
-doxygen
 
 
 %install
@@ -147,10 +132,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_libdir}/*.so
 %{_includedir}/obs/
 
-%files doc
-%doc docs/html
-
 %changelog
+* Wed Oct 14 2020 Momcilo Medic <fedorauser@fedoraproject.org> - 26.0.2-1
+- Removed doxygen bits as upstream removed it
+- Updated to 26.0.2
+
 * Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 25.0.8-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
