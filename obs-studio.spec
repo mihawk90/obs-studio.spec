@@ -6,6 +6,11 @@
 %global __python %{__python2}
 %endif
 
+%if 0%{?el7}
+# Developper toolset version
+%global dts_ver       8
+%endif
+
 Name:           obs-studio
 Version:        26.0.2
 Release:        1%{?dist}
