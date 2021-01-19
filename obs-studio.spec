@@ -12,8 +12,8 @@
 %endif
 
 Name:           obs-studio
-Version:        26.1.0
-Release:        2%{?dist}
+Version:        26.1.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -147,6 +147,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Jan 19 2021 Martin Gansser <martinkg@fedoraproject.org> - 26.1.1-1
+- Update to 26.1.1
+
 * Fri Jan  1 2021 Leigh Scott <leigh123linux@gmail.com> - 26.1.0-2
 - Rebuilt for new ffmpeg snapshot
 
