@@ -12,7 +12,7 @@
 %endif
 
 Name:           obs-studio
-Version:        26.1.1
+Version:        26.1.2
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -147,6 +147,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Jan 20 2021 Martin Gansser <martinkg@fedoraproject.org> - 26.1.2-1
+- Update to 26.1.2
+
 * Tue Jan 19 2021 Martin Gansser <martinkg@fedoraproject.org> - 26.1.1-1
 - Update to 26.1.1
 
