@@ -11,59 +11,61 @@
 %global dts_ver       8
 %endif
 
+%global commit1 a2cbc14324d2ba12ee9dc84babc85f73de9779c2
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+
 Name:           obs-studio
 Version:        26.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-
-# Arm gcc has no xmmintrin.h file
-ExclusiveArch: i686 x86_64
+Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  cmake3
 BuildRequires:  ninja-build
-BuildRequires:  libX11-devel
-BuildRequires:  mesa-libGL-devel
+BuildRequires:  libappstream-glib
+%if 0%{?el7}
+BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
+%endif
+
+BuildRequires:  alsa-lib-devel
+BuildRequires:  desktop-file-utils
 BuildRequires:  ffmpeg-devel
-BuildRequires:  libv4l-devel
-BuildRequires:  pulseaudio-libs-devel
-BuildRequires:  x264-devel
-BuildRequires:  freetype-devel
 BuildRequires:  fontconfig-devel
+BuildRequires:  freetype-devel
+BuildRequires:  jack-audio-connection-kit-devel
+BuildRequires:  jansson-devel
+BuildRequires:  libcurl-devel
+BuildRequires:  libGL-devel
+BuildRequires:  libv4l-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libxcb-devel
 BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
-BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtx11extras-devel
-BuildRequires:  qt5-qtsvg-devel
-BuildRequires:  jansson-devel
-BuildRequires:  jack-audio-connection-kit-devel
-BuildRequires:  libcurl-devel
-BuildRequires:  desktop-file-utils
-BuildRequires:  vlc-devel
-BuildRequires:  alsa-lib-devel
-BuildRequires:  systemd-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
-BuildRequires:  speexdsp-devel
-%else
-BuildRequires:  speex-devel
-%endif
+BuildRequires:  luajit-devel
+BuildRequires:  mbedtls-devel
+BuildRequires:  pulseaudio-libs-devel
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  python3-devel
 %else
 BuildRequires:  python2-devel
 %endif
-BuildRequires:  luajit-devel
-BuildRequires:  swig
-BuildRequires:  libxcb-devel
-BuildRequires:  mbedtls-devel
-BuildRequires:  libappstream-glib
-%if 0%{?el7}
-BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
+BuildRequires:  qt5-qtbase-devel
+BuildRequires:  qt5-qtsvg-devel
+BuildRequires:  qt5-qtx11extras-devel
+%if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires:  speexdsp-devel
+%else
+BuildRequires:  speex-devel
 %endif
+BuildRequires:  swig
+BuildRequires:  systemd-devel
+BuildRequires:  vlc-devel
+BuildRequires:  x264-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
@@ -96,6 +98,9 @@ Header files for Open Broadcaster Software
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
+
+# Prepare plugins/obs-vst
+tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
 %build
 %if 0%{?el7}
@@ -147,6 +152,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Feb 10 2021 Nicolas Chauvet <kwizart@gmail.com> - 26.1.2-3
+- Add obs-vst plugins
+- Build for all arches (armv7hl, aarch64, ppc64le)
+- Re-order build dependencies
+
 * Wed Feb 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 26.1.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
