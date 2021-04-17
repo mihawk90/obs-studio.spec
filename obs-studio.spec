@@ -1,3 +1,6 @@
+# Local definition of version_no_tilde when it doesn't exist
+%{!?version_no_tilde: %define version_no_tilde %{shrink:%(echo '%{version}' | tr '~' '-')}}
+
 %undefine __cmake_in_source_build
 %if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
@@ -11,17 +14,17 @@
 %global dts_ver       8
 %endif
 
-%global commit1 a2cbc14324d2ba12ee9dc84babc85f73de9779c2
+%global commit1 24b03e876233058b10c0f02441ab1a3829d56cad
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        26.1.2
-Release:        3%{?dist}
+Version:        27.0.0~rc2
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
 BuildRequires:  gcc
@@ -34,12 +37,14 @@ BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-
 
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
+BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
 BuildRequires:  jack-audio-connection-kit-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
+BuildRequires:  libftl-devel
 BuildRequires:  libGL-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  libX11-devel
@@ -48,6 +53,7 @@ BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
 BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
+BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  python3-devel
@@ -55,7 +61,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python2-devel
 %endif
 BuildRequires:  qt5-qtbase-devel
+BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtsvg-devel
+BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  qt5-qtx11extras-devel
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  speexdsp-devel
@@ -65,6 +73,7 @@ BuildRequires:  speex-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
 BuildRequires:  vlc-devel
+BuildRequires:  wayland-devel
 BuildRequires:  x264-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
@@ -77,6 +86,7 @@ software for video recording and live streaming.
 
 %package libs
 Summary: Open Broadcaster Software Studio libraries
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 
 %description libs
 Library files for Open Broadcaster Software
@@ -93,7 +103,7 @@ Header files for Open Broadcaster Software
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
-%autosetup -p0
+%autosetup -p1 -n %{name}-%{version_no_tilde}
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -108,6 +118,7 @@ tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 %endif
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
+        -DBUILD_BROWSER=OFF \
         -DOpenGL_GL_PREFERENCE=GLVND
 %cmake3_build
 
@@ -152,6 +163,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Apr 17 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc2-1
+- Bump to 27.0.0~rc2
+
 * Wed Feb 10 2021 Nicolas Chauvet <kwizart@gmail.com> - 26.1.2-3
 - Add obs-vst plugins
 - Build for all arches (armv7hl, aarch64, ppc64le)
