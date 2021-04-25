@@ -14,18 +14,21 @@
 %global dts_ver       8
 %endif
 
-%global commit1 24b03e876233058b10c0f02441ab1a3829d56cad
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global commit_vst f34327d98c0a54a6da29d37f0b8db790b6adbe4e
+%global commit_browser eaff66d0f129a0a9658469e013b80f5aa2ebeb10
+%global version_cef 4280
 
 Name:           obs-studio
 Version:        27.0.0~rc2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
-Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
+Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
+Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
+Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 
 BuildRequires:  gcc
 BuildRequires:  cmake3
@@ -80,6 +83,12 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
 Requires:       x264
 
+# CEF dependencies, both for compiling Browser Source and running it
+%define cef_runtime_deps nss, nss-util, nspr, atk, at-spi2-atk, libXrandr, at-spi2-core, libXdamage
+
+BuildRequires: %{cef_runtime_deps}
+Requires:      %{cef_runtime_deps}
+
 %description
 Open Broadcaster Software is free and open source
 software for video recording and live streaming.
@@ -112,14 +121,21 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 # Prepare plugins/obs-vst
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
+# Prepare plugins/obs-browser
+tar -xf %{SOURCE2} -C plugins/obs-browser --strip-components=1
+# unpack CEF for later use
+mkdir -p /builddir/build/SOURCES/CEF
+tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
+
+
 %build
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
-        -DBUILD_BROWSER=OFF \
-        -DOpenGL_GL_PREFERENCE=GLVND
+        -DOpenGL_GL_PREFERENCE=GLVND \
+        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF"
 %cmake3_build
 
 
@@ -129,6 +145,10 @@ tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
+
+# copy CEF license because we need to distribute it with the binary
+cp /builddir/build/SOURCES/CEF/LICENSE.txt cef_license.txt
+
 
 %check
 %if 0%{?el7}
@@ -143,6 +163,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc README.rst
 %license UI/data/license/gplv2.txt
 %license COPYING
+%license cef_license.txt
 %{_bindir}/obs
 %{_bindir}/obs-ffmpeg-mux
 %{_datadir}/metainfo/com.obsproject.Studio.appdata.xml
@@ -163,6 +184,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Fri Apr 25 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-3
+- enable compilation of Browser Plugin
+
 * Thu Apr 22 2021 Leigh Scott <leigh123linux@gmail.com> - 27.0.0~rc2-2
 - Rebuild for libftl issue (rfbz5978)
 
