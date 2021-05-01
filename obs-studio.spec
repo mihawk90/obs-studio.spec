@@ -20,7 +20,7 @@
 
 Name:           obs-studio
 Version:        27.0.0~rc2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -135,7 +135,9 @@ tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
         -DOpenGL_GL_PREFERENCE=GLVND \
-        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF"
+        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
+        -DTWITCH_CLIENTID='' -DTWITCH_HASH='' \
+        -DRESTREAM_CLIENTID='' -DRESTREAM_HASH=''
 %cmake3_build
 
 
