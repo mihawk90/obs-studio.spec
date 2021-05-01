@@ -1,2 +1,5 @@
-/obs-studio-*.tar.gz
-/obs-vst-*.tar.gz
+/*.tar.gz
+/*.tar.bz2
+/*.rpm
+obs-secrets
+
