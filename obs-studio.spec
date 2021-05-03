@@ -15,12 +15,12 @@
 %endif
 
 %global commit_vst f34327d98c0a54a6da29d37f0b8db790b6adbe4e
-%global commit_browser eaff66d0f129a0a9658469e013b80f5aa2ebeb10
+%global commit_browser 2898e94f8666277d343c5f968e8b6efdd87f0ae5
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.0~rc2
-Release:        4%{?dist}
+Version:        27.0.0~rc3
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -186,7 +186,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
-* Fri Apr 25 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-3
+* Mon May 03 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc3-1
+- Bump to 27.0.0~rc3
+- Bump obs-browser submodule along with RC3
+
+* Sat May 02 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-4
+- Enable Twitch and Restream Service integrations
+- manual compilation requires manual filling in of Client-IDs and Hashes
+
+* Sun Apr 25 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-3
 - enable compilation of Browser Plugin
 
 * Thu Apr 22 2021 Leigh Scott <leigh123linux@gmail.com> - 27.0.0~rc2-2
