@@ -18,8 +18,8 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.0.0~rc2
-Release:        2%{?dist}
+Version:        27.0.0~rc3
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -41,7 +41,11 @@ BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
+%if 0%{?fedora} >= 34 || 0%{?rhel} >= 9
+BuildRequires:  pipewire-jack-audio-connection-kit-devel
+%else
 BuildRequires:  jack-audio-connection-kit-devel
+%endif
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libftl-devel
@@ -163,6 +167,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed May 05 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc3-1
+- Bump to 27.0.0~rc3
+
 * Thu Apr 22 2021 Leigh Scott <leigh123linux@gmail.com> - 27.0.0~rc2-2
 - Rebuild for libftl issue (rfbz5978)
 
