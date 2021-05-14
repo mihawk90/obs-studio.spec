@@ -20,7 +20,7 @@
 
 Name:           obs-studio
 Version:        27.0.0~rc3
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -29,6 +29,8 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_ti
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
+# From: https://github.com/obsproject/obs-studio/pull/4657
+Patch0001:      0001-cmake-Fix-to-support-finding-PipeWire-s-libjack.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake3
@@ -44,7 +46,11 @@ BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
+%if 0%{?fedora} >= 34 || 0%{?rhel} >= 9
+BuildRequires:  pipewire-jack-audio-connection-kit-devel
+%else
 BuildRequires:  jack-audio-connection-kit-devel
+%endif
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libftl-devel
@@ -186,11 +192,20 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu May 13 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc3-3
+- bump release version to include merged release
+
+* Wed May 05 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc3-2
+- Fix detecting pipewire-libjack so jack plugin is built
+
+* Wed May 05 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc3-1
+- Bump to 27.0.0~rc3
+
 * Mon May 03 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc3-1
 - Bump to 27.0.0~rc3
 - Bump obs-browser submodule along with RC3
 
-* Sat May 02 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-4
+* Sun May 02 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc2-4
 - Enable Twitch and Restream Service integrations
 - manual compilation requires manual filling in of Client-IDs and Hashes
 
