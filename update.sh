@@ -18,5 +18,7 @@ if [ "$1" == "cef" ]; then
 	sed --in-place "s/%global version_cef .*/%global version_cef $2/" obs-studio.spec
 fi
 
+sed --in-place "s/%changelog/%changelog\n\* $(date +'%a %b %d %Y') Tarulia <mihawk.90+git@googlemail.com> - Version\n- \n/" obs-studio.spec
+
 git diff obs-studio.spec
 
