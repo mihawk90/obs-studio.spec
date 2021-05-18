@@ -15,12 +15,12 @@
 %endif
 
 %global commit_vst f34327d98c0a54a6da29d37f0b8db790b6adbe4e
-%global commit_browser 2898e94f8666277d343c5f968e8b6efdd87f0ae5
+%global commit_browser 8884c91c3e0e38c5498dc460bd73370118d806b7
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.0~rc3
-Release:        3%{?dist}
+Version:        27.0.0~rc4
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -29,8 +29,6 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_ti
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
-# From: https://github.com/obsproject/obs-studio/pull/4657
-Patch0001:      0001-cmake-Fix-to-support-finding-PipeWire-s-libjack.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake3
@@ -192,6 +190,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Fri May 14 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc4-11
+- Bump to 27.0.0~rc4
+- Bump obs-browser submodule along with RC4
+- remove temporary patch introduced in rc3-1 since it was merged upstream
+
 * Thu May 13 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc3-3
 - bump release version to include merged release
 
