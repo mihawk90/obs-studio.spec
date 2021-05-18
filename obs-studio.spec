@@ -14,12 +14,12 @@
 %global dts_ver       8
 %endif
 
-%global commit_vst f34327d98c0a54a6da29d37f0b8db790b6adbe4e
+%global commit_vst 1b9d20afd353a51b0fedf68a9e1b8c919312189d
 %global commit_browser 8884c91c3e0e38c5498dc460bd73370118d806b7
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.0~rc4
+Version:        27.0.0~rc5
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -190,6 +190,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue May 18 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc5-11
+- Bump to 27.0.0~rc5
+- Bump obs-vst submodule along with RC5
+
 * Fri May 14 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc4-11
 - Bump to 27.0.0~rc4
 - Bump obs-browser submodule along with RC4
