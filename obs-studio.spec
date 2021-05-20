@@ -14,20 +14,18 @@
 %global dts_ver       8
 %endif
 
-%global commit1 24b03e876233058b10c0f02441ab1a3829d56cad
+%global commit1 1b9d20afd353a51b0fedf68a9e1b8c919312189d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.0.0~rc3
-Release:        2%{?dist}
+Version:        27.0.0~rc5
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
-# From: https://github.com/obsproject/obs-studio/pull/4657
-Patch0001:      0001-cmake-Fix-to-support-finding-PipeWire-s-libjack.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake3
@@ -169,6 +167,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu May 20 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc5-1
+- Bump to 27.0.0~rc5
+- Drop upstreamed patch for building jack plugin
+
 * Wed May 05 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc3-2
 - Fix detecting pipewire-libjack so jack plugin is built
 
