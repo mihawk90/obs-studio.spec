@@ -18,7 +18,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.0.0~rc5
+Version:        27.0.0~rc6
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -167,6 +167,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon May 24 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc6-1
+- Bump to 27.0.0~rc6
+
 * Thu May 20 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc5-1
 - Bump to 27.0.0~rc5
 - Drop upstreamed patch for building jack plugin
