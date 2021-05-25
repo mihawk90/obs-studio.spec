@@ -3,7 +3,7 @@
 cd obs-studio
 git checkout master
 git pull
-git checkout 27.0.0-rc5 # $(cat $spec | grep Version\: | cut -d" " -f9)   # git tag -l | tail -n1
+git checkout 27.0.0-rc6 # $(cat $spec | grep Version\: | cut -d" " -f9)   # git tag -l | tail -n1
 git submodule update
 git submodule status | tee ../submodules.txt
 cd ..

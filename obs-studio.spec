@@ -20,7 +20,7 @@
 
 Name:           obs-studio
 Version:        27.0.0~rc6
-Release:        1%{?dist}
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -190,6 +190,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon May 24 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc6-11
+- identical to -1, release-bump for higher version only
+
 * Mon May 24 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc6-1
 - Bump to 27.0.0~rc6
 
