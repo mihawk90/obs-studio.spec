@@ -1,10 +1,6 @@
 %undefine __cmake_in_source_build
-%if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
 %global __python %{__python3}
-%else
-%global __python %{__python2}
-%endif
 
 %global commit1 aaa7b7fa32c40b37f59e7d3d194672115451f198
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -20,12 +16,9 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{na
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  cmake3
+BuildRequires:  cmake >= 3.0
 BuildRequires:  ninja-build
 BuildRequires:  libappstream-glib
-%if 0%{?el7}
-BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
-%endif
 
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
@@ -100,15 +93,15 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
 %build
-%cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
-        -DUNIX_STRUCTURE=1 -GNinja \
-        -DBUILD_BROWSER=OFF \
-        -DOpenGL_GL_PREFERENCE=GLVND
-%cmake3_build
+%cmake -DOBS_VERSION_OVERRIDE=%{version} \
+       -DUNIX_STRUCTURE=1 -GNinja \
+       -DBUILD_BROWSER=OFF \
+       -DOpenGL_GL_PREFERENCE=GLVND
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
@@ -117,8 +110,6 @@ install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmak
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
-
-%ldconfig_scriptlets libs
 
 %files
 %doc README.rst
