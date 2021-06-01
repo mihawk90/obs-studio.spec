@@ -1,6 +1,3 @@
-# Local definition of version_no_tilde when it doesn't exist
-%{!?version_no_tilde: %define version_no_tilde %{shrink:%(echo '%{version}' | tr '~' '-')}}
-
 %undefine __cmake_in_source_build
 %if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
@@ -9,22 +6,17 @@
 %global __python %{__python2}
 %endif
 
-%if 0%{?el7}
-# Developper toolset version
-%global dts_ver       8
-%endif
-
-%global commit1 1b9d20afd353a51b0fedf68a9e1b8c919312189d
+%global commit1 aaa7b7fa32c40b37f59e7d3d194672115451f198
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.0.0~rc6
+Version:        27.0.0
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
 BuildRequires:  gcc
@@ -37,7 +29,9 @@ BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-
 
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
+%if 0%{?fedora} || 0%{?rhel} >= 9
 BuildRequires:  fdk-aac-free-devel
+%endif
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
@@ -59,21 +53,13 @@ BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  python3-devel
-%else
-BuildRequires:  python2-devel
-%endif
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  qt5-qtx11extras-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  speexdsp-devel
-%else
-BuildRequires:  speex-devel
-%endif
 BuildRequires:  swig
 BuildRequires:  systemd-devel
 BuildRequires:  vlc-devel
@@ -104,10 +90,7 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
-%autosetup -p1 -n %{name}-%{version_no_tilde}
+%autosetup -p1
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -117,9 +100,6 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
 %build
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
 %cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
         -DUNIX_STRUCTURE=1 -GNinja \
         -DBUILD_BROWSER=OFF \
@@ -135,9 +115,6 @@ install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
 
 %check
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
@@ -157,16 +134,22 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %files libs
 %{_libdir}/obs-plugins/
 %{_libdir}/obs-scripting/
-%{_libdir}/libobs-scripting.so
+# unversioned so files packaged for third-party plugins (cf. rfbz#5999)
+%{_libdir}/*.so
 %{_libdir}/*.so.*
 
 %files devel
 %{_libdir}/cmake/LibObs/
 %{_libdir}/pkgconfig/libobs.pc
-%{_libdir}/*.so
 %{_includedir}/obs/
 
 %changelog
+* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0
+- Bump to 27.0.0 final
+- Move unversioned so files to -libs for third-party plugins (rfbz#5999)
+- Make build for EL8
+- Drop legacy EL7 stuff
+
 * Mon May 24 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0~rc6-1
 - Bump to 27.0.0~rc6
 
