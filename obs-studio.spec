@@ -1,46 +1,33 @@
-# Local definition of version_no_tilde when it doesn't exist
-%{!?version_no_tilde: %define version_no_tilde %{shrink:%(echo '%{version}' | tr '~' '-')}}
-
 %undefine __cmake_in_source_build
-%if 0%{?fedora} || 0%{?rhel} > 7
 # bytecompile with Python 3
 %global __python %{__python3}
-%else
-%global __python %{__python2}
-%endif
 
-%if 0%{?el7}
-# Developper toolset version
-%global dts_ver       8
-%endif
-
-%global commit_vst 1b9d20afd353a51b0fedf68a9e1b8c919312189d
+%global commit_vst aaa7b7fa32c40b37f59e7d3d194672115451f198
 %global commit_browser 8884c91c3e0e38c5498dc460bd73370118d806b7
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.0~rc6
-Release:        11%{?dist}
+Version:        27.0.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 
 BuildRequires:  gcc
-BuildRequires:  cmake3
+BuildRequires:  cmake >= 3.0
 BuildRequires:  ninja-build
 BuildRequires:  libappstream-glib
-%if 0%{?el7}
-BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
-%endif
 
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
+%if 0%{?fedora} || 0%{?rhel} >= 9
 BuildRequires:  fdk-aac-free-devel
+%endif
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
@@ -62,21 +49,13 @@ BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  python3-devel
-%else
-BuildRequires:  python2-devel
-%endif
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  qt5-qtx11extras-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  speexdsp-devel
-%else
-BuildRequires:  speex-devel
-%endif
 BuildRequires:  swig
 BuildRequires:  systemd-devel
 BuildRequires:  vlc-devel
@@ -113,10 +92,7 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
-%autosetup -p1 -n %{name}-%{version_no_tilde}
+%autosetup -p1
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -133,20 +109,17 @@ tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
 
 
 %build
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
-%cmake3 -DOBS_VERSION_OVERRIDE=%{version} \
-        -DUNIX_STRUCTURE=1 -GNinja \
-        -DOpenGL_GL_PREFERENCE=GLVND \
-        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
-        -DTWITCH_CLIENTID='' -DTWITCH_HASH='' \
-        -DRESTREAM_CLIENTID='' -DRESTREAM_HASH=''
-%cmake3_build
+%cmake -DOBS_VERSION_OVERRIDE=%{version} \
+       -DUNIX_STRUCTURE=1 -GNinja \
+       -DOpenGL_GL_PREFERENCE=GLVND \
+       -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
+       -DTWITCH_CLIENTID='' -DTWITCH_HASH='' \
+       -DRESTREAM_CLIENTID='' -DRESTREAM_HASH=''
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
@@ -157,13 +130,8 @@ cp /builddir/build/SOURCES/CEF/LICENSE.txt cef_license.txt
 
 
 %check
-%if 0%{?el7}
-. /opt/rh/devtoolset-%{dts_ver}/enable
-%endif
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
-
-%ldconfig_scriptlets libs
 
 %files
 %doc README.rst
@@ -180,16 +148,22 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %files libs
 %{_libdir}/obs-plugins/
 %{_libdir}/obs-scripting/
-%{_libdir}/libobs-scripting.so
+# unversioned so files packaged for third-party plugins (cf. rfbz#5999)
+%{_libdir}/*.so
 %{_libdir}/*.so.*
 
 %files devel
 %{_libdir}/cmake/LibObs/
 %{_libdir}/pkgconfig/libobs.pc
-%{_libdir}/*.so
 %{_includedir}/obs/
 
 %changelog
+* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0
+- Bump to 27.0.0 final
+- Move unversioned so files to -libs for third-party plugins (rfbz#5999)
+- Make build for EL8
+- Drop legacy EL7 stuff
+
 * Mon May 24 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0~rc6-11
 - identical to -1, release-bump for higher version only
 
