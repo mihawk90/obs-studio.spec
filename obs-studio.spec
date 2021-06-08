@@ -3,12 +3,12 @@
 %global __python %{__python3}
 
 %global commit_vst aaa7b7fa32c40b37f59e7d3d194672115451f198
-%global commit_browser 8884c91c3e0e38c5498dc460bd73370118d806b7
+%global commit_browser f1a61c5a2579e5673765c31a47c2053d4b502d4b
 %global version_cef 4280
 
 Name:           obs-studio
 Version:        27.0.0
-Release:        1%{?dist}
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -158,6 +158,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Jun 08 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0-11
+- Bump obs-browser submodule along with 27.0.0 final
+
 * Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0
 - Bump to 27.0.0 final
 - Move unversioned so files to -libs for third-party plugins (rfbz#5999)
