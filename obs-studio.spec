@@ -135,7 +135,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
-* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0
+* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0-1
 - Bump to 27.0.0 final
 - Move unversioned so files to -libs for third-party plugins (rfbz#5999)
 - Make build for EL8
