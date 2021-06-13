@@ -6,7 +6,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.0.0
+Version:        27.0.1
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -135,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Jun 12 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-1
+- Update to 27.0.1
+
 * Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0-1
 - Bump to 27.0.0 final
 - Move unversioned so files to -libs for third-party plugins (rfbz#5999)
