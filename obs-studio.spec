@@ -7,8 +7,8 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.0
-Release:        11%{?dist}
+Version:        27.0.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -158,10 +158,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Jun 12 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-1
+- Update to 27.0.1
+
 * Tue Jun 08 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.0-11
 - Bump obs-browser submodule along with 27.0.0 final
 
-* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0
+* Tue Jun 01 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.0-1
 - Bump to 27.0.0 final
 - Move unversioned so files to -libs for third-party plugins (rfbz#5999)
 - Make build for EL8
