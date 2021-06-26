@@ -7,13 +7,16 @@
 
 Name:           obs-studio
 Version:        27.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
+
+# Backports from upstream
+Patch0001:      0001-pipewire-Properly-account-for-cursor-hotspot.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -135,6 +138,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Jun 26 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-2
+- Backport fix for cursor positioning in Wayland screencasting
+
 * Sat Jun 12 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-1
 - Update to 27.0.1
 
