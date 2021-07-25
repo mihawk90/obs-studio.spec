@@ -7,15 +7,15 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.1
+Version:        27.0.1~PR5022
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/GeorgesStavracas/obs-studio/archive/refs/heads/gbsneto/reenable-dnd-sources.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
-Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
+Source2:        https://github.com/GeorgesStavracas/obs-browser/archive/refs/heads/gbsneto/my-sincere-apologies-reviewer.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 
 BuildRequires:  gcc
@@ -92,7 +92,8 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%autosetup -p1
+# this is the name of the top-level directory in the tarball
+%autosetup -p1 -n "obs-studio-gbsneto-reenable-dnd-sources"
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -158,6 +159,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Jul 25 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.1-21
+- Special Build for Testing Purposes only
+- Includes obsproject/obs-studio#5022 and obsproject/obs-browser#304
+- version-release bump to 21
+
 * Sun Jun 13 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.1-11
 - version-release bump to 11
 
