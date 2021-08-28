@@ -8,7 +8,7 @@
 
 Name:           obs-studio
 Version:        27.0.1
-Release:        2%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -161,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.1-12
+- version-release bump to 12
+
 * Sat Jun 26 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-2
 - Backport fix for cursor positioning in Wayland screencasting
 
