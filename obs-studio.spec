@@ -1,25 +1,25 @@
+# Local definition of version_no_tilde when it doesn't exist
+%{!?version_no_tilde: %define version_no_tilde %{shrink:%(echo '%{version}' | tr '~' '-')}}
+
 %undefine __cmake_in_source_build
 # bytecompile with Python 3
 %global __python %{__python3}
 
 %global commit_vst aaa7b7fa32c40b37f59e7d3d194672115451f198
-%global commit_browser f1a61c5a2579e5673765c31a47c2053d4b502d4b
+%global commit_browser 3d926c7804af5d392492f4fbd87fbbf9841ee24c
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.0.1
-Release:        12%{?dist}
+Version:        27.1.0~rc1
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
-
-# Backports from upstream
-Patch0001:      0001-pipewire-Properly-account-for-cursor-hotspot.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -95,7 +95,7 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version_no_tilde}
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -119,7 +119,11 @@ tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
-       -DRESTREAM_HASH=''
+       -DRESTREAM_HASH='' \
+       -DYOUTUBE_CLIENTID='' \
+       -DYOUTUBE_CLIENTID_HASH='' \
+       -DYOUTUBE_SECRET='' \
+       -DYOUTUBE_SECRET_HASH=''
 %cmake_build
 
 
@@ -163,6 +167,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0-11
+- removed patch from 27.0.1-2 as it was merged upstream, see obsproject/obs-studio#4936
+- Bump obs-browser submodule along with 27.1.0~rc1
+- added YouTube integration compile flags
+
 * Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.1-12
 - version-release bump to 12
 

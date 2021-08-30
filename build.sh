@@ -28,6 +28,15 @@ if [[ -f "./obs-secrets" ]]; then
 		sed --in-place "s/-DRESTREAM_CLIENTID='.*'/-DRESTREAM_CLIENTID='$(cat "./obs-secrets"| grep RESTREAM_CLIENTID | cut -d' ' -f2)'/" $spec
 		sed --in-place "s/-DRESTREAM_HASH='.*'/-DRESTREAM_HASH='$(cat "./obs-secrets"| grep RESTREAM_HASH | cut -d' ' -f2)'/" $spec
 	fi
+
+	#TODO: YouTube secrets
+	if [[ $(cat "./obs-secrets" | grep YOUTUBE_CLIENTID) ]]; then
+		sed --in-place "s/-DYOUTUBE_CLIENTID='.*'/-DYOUTUBE_CLIENTID='$(cat "./obs-secrets"| grep -w YOUTUBE_CLIENTID | cut -d' ' -f2)'/" $spec
+		sed --in-place "s/-DYOUTUBE_CLIENTID_HASH='.*'/-DYOUTUBE_CLIENTID_HASH='$(cat "./obs-secrets"| grep -w YOUTUBE_CLIENTID_HASH | cut -d' ' -f2)'/" $spec
+		sed --in-place "s/-DYOUTUBE_SECRET='.*'/-DYOUTUBE_SECRET='$(cat "./obs-secrets"| grep -w YOUTUBE_SECRET | cut -d' ' -f2)'/" $spec
+		sed --in-place "s/-DYOUTUBE_SECRET_HASH='.*'/-DYOUTUBE_SECRET_HASH='$(cat "./obs-secrets"| grep -w YOUTUBE_SECRET_HASH | cut -d' ' -f2)'/" $spec
+	fi
+
 fi
 
 ### build phase
@@ -42,13 +51,19 @@ sha512sum obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-libs-$mver
 echo "Copied RPM to current directory. Enter sudo-password to install using DNF. Press Ctrl-c to cancel installation."
 sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
 
-### clean up
+### clean up client secrets
+# can always do this with the .* quantifier
 
 # clean up client secrets, can always do this with the .* quantifier
 sed --in-place "s/-DTWITCH_CLIENTID='.*'/-DTWITCH_CLIENTID=''/" $spec
 sed --in-place "s/-DTWITCH_HASH='.*'/-DTWITCH_HASH=''/" $spec
 sed --in-place "s/-DRESTREAM_CLIENTID='.*'/-DRESTREAM_CLIENTID=''/" $spec
 sed --in-place "s/-DRESTREAM_HASH='.*'/-DRESTREAM_HASH=''/" $spec
+
+sed --in-place "s/-DYOUTUBE_CLIENTID='.*'/-DYOUTUBE_CLIENTID=''/" $spec
+sed --in-place "s/-DYOUTUBE_CLIENTID_HASH='.*'/-DYOUTUBE_CLIENTID_HASH=''/" $spec
+sed --in-place "s/-DYOUTUBE_SECRET='.*'/-DYOUTUBE_SECRET=''/" $spec
+sed --in-place "s/-DYOUTUBE_SECRET_HASH='.*'/-DYOUTUBE_SECRET_HASH=''/" $spec
 
 echo "All done!"
 
