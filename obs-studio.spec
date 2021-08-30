@@ -116,8 +116,10 @@ tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
        -DUNIX_STRUCTURE=1 -GNinja \
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
-       -DTWITCH_CLIENTID='' -DTWITCH_HASH='' \
-       -DRESTREAM_CLIENTID='' -DRESTREAM_HASH=''
+       -DTWITCH_CLIENTID='' \
+       -DTWITCH_HASH='' \
+       -DRESTREAM_CLIENTID='' \
+       -DRESTREAM_HASH=''
 %cmake_build
 
 
