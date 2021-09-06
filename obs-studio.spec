@@ -10,7 +10,7 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.1.0~rc1
+Version:        27.1.0~rc2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -167,7 +167,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
-* Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0-11
+* Mon Sep 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc2-11
+- Update to 27.1.0~rc2
+
+* Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc1-11
+- Update to 27.1.0~rc1
 - removed patch from 27.0.1-2 as it was merged upstream, see obsproject/obs-studio#4936
 - Bump obs-browser submodule along with 27.1.0~rc1
 - added YouTube integration compile flags
