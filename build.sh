@@ -41,22 +41,23 @@ fi
 
 ### build phase
 
-spectool -g $spec
-rm obs-studio-$mver-$rver.fc$frel.*.rpm
-mock -r fedora-$frel-x86_64-rpmfusion_free --sources=. --spec=$spec
+spectool -g $spec --directory ./f_downloads
+mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec
 
+mkdir -p f_upload && pushd ./f_upload
 cp /var/lib/mock/fedora-$frel-x86_64/result/obs-studio-*$mver-$rver.fc$frel.*.rpm .
 sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.x86_64.rpm.sha512
 sha512sum obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm.sha512
 echo "Copied RPM to current directory. Enter sudo-password to install using DNF. Press Ctrl-c to cancel installation."
 sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
+popd
 
 ### clean up client secrets
 # can always do this with the .* quantifier
 
-# clean up client secrets, can always do this with the .* quantifier
 sed --in-place "s/-DTWITCH_CLIENTID='.*'/-DTWITCH_CLIENTID=''/" $spec
 sed --in-place "s/-DTWITCH_HASH='.*'/-DTWITCH_HASH=''/" $spec
+
 sed --in-place "s/-DRESTREAM_CLIENTID='.*'/-DRESTREAM_CLIENTID=''/" $spec
 sed --in-place "s/-DRESTREAM_HASH='.*'/-DRESTREAM_HASH=''/" $spec
 

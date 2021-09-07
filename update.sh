@@ -1,18 +1,16 @@
 #!/bin/sh
 
-cd obs-studio
+pushd obs-studio
 git checkout master
 git pull
 git checkout $(git tag --list --sort=taggerdate | tail -n1)
 git submodule update
-git submodule status | tee ../submodules.txt
-cd ..
+git submodule status
+popd
 
 # update commits in spec file
-sed --in-place "s/%global commit_vst .*/%global commit_vst $(cat submodules.txt | grep obs-vst | cut -d' ' -f2 )/" obs-studio.spec
-sed --in-place "s/%global commit_browser .*/%global commit_browser $(cat submodules.txt | grep obs-browser | cut -d' ' -f2 )/" obs-studio.spec
-
-rm submodules.txt
+sed --in-place "s/%global commit_vst .*/%global commit_vst $(git -C  ./obs-studio submodule status | grep obs-vst | cut -d' ' -f2 )/" obs-studio.spec
+sed --in-place "s/%global commit_browser .*/%global commit_browser $(git -C ./obs-studio submodule status | grep obs-browser | cut -d' ' -f2 )/" obs-studio.spec
 
 if [ "$1" == "cef" ]; then
 	sed --in-place "s/%global version_cef .*/%global version_cef $2/" obs-studio.spec

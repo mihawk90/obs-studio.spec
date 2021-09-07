@@ -1,7 +1,4 @@
-/*.tar.gz
-/*.tar.bz2
-/*.rpm
-/*.sha512
 obs-secrets
 obs-studio/
-
+f_downloads/
+f_upload/
