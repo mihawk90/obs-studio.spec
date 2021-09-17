@@ -10,7 +10,7 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.1.0~rc2
+Version:        27.1.0~rc3
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -167,6 +167,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Fri Sep 17 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc3-11
+- Update to 27.1.0~rc3
+
 * Mon Sep 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc2-11
 - Update to 27.1.0~rc2
 
