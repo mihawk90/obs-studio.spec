@@ -112,7 +112,7 @@ tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
 
 
 %build
-%cmake -DOBS_VERSION_OVERRIDE=%{version} \
+%cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
