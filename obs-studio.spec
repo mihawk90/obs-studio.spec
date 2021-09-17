@@ -107,15 +107,15 @@ tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 # Prepare plugins/obs-browser
 tar -xf %{SOURCE2} -C plugins/obs-browser --strip-components=1
 # unpack CEF for later use
-mkdir -p /builddir/build/SOURCES/CEF
-tar -xjf %{SOURCE3} -C /builddir/build/SOURCES/CEF --strip-components=1
+mkdir -p %{_builddir}/SOURCES/CEF
+tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DOpenGL_GL_PREFERENCE=GLVND \
-       -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="/builddir/build/SOURCES/CEF" \
+       -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
@@ -135,7 +135,7 @@ install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}
 install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
 
 # copy CEF license because we need to distribute it with the binary
-cp /builddir/build/SOURCES/CEF/LICENSE.txt cef_license.txt
+cp %{_builddir}/SOURCES/CEF/LICENSE.txt cef_license.txt
 
 
 %check
