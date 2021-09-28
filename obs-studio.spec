@@ -2,22 +2,18 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit1 aaa7b7fa32c40b37f59e7d3d194672115451f198
+%global commit1 0dc95ed584b3f14ca308706d0d0324252bd9700b
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.1.0~rc3
-Release:        2%{?dist}
+Version:        27.1.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
-
-# Backports from upstream
-## From: https://github.com/obsproject/obs-studio/commit/ef0540c0d7df64b6cb148c80d566281a4ff3ba5c
-Patch0001:      0001-linux-capture-Lookup-session-handle-without-typechec.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -87,7 +83,7 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version_no_tilde}
+%autosetup -p1
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
@@ -139,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 28 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.1-1
+- Bump to 27.1.1 final
+
 * Sat Sep 18 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.0~rc3-2
 - Backport fix for PipeWire screencasting on F35+
 
