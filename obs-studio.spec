@@ -1,6 +1,3 @@
-# Local definition of version_no_tilde when it doesn't exist
-%{!?version_no_tilde: %define version_no_tilde %{shrink:%(echo '%{version}' | tr '~' '-')}}
-
 %undefine __cmake_in_source_build
 # bytecompile with Python 3
 %global __python %{__python3}
@@ -10,8 +7,8 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.1.0
-Release:        11%{?dist}
+Version:        27.1.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -167,13 +164,25 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 28 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.1-1
+- Bump to 27.1.1 final
+
 * Tue Sep 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0-11
 - Update to 27.1.0
 - bump obs-browser commit
 - bump obs-vst commit
 
+* Sat Sep 18 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.0~rc3-2
+- Backport fix for PipeWire screencasting on F35+
+
+* Sat Sep 18 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.0~rc3-1
+- Update to 27.1.0~rc3
+
 * Fri Sep 17 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc3-11
 - Update to 27.1.0~rc3
+
+* Sat Sep 11 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.0~rc2-1
+- Update to 27.1.0~rc2
 
 * Mon Sep 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.0~rc2-11
 - Update to 27.1.0~rc2
@@ -186,6 +195,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 * Sat Aug 28 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.0.1-12
 - version-release bump to 12
+
+* Tue Aug 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 27.0.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Sun Jul 11 2021 Sérgio Basto <sergio@serjux.com> - 27.0.1-3
+- Mass rebuild for x264-0.163
 
 * Sat Jun 26 2021 Neal Gompa <ngompa13@gmail.com> - 27.0.1-2
 - Backport fix for cursor positioning in Wayland screencasting
