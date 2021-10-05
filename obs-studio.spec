@@ -3,12 +3,12 @@
 %global __python %{__python3}
 
 %global commit_vst 0dc95ed584b3f14ca308706d0d0324252bd9700b
-%global commit_browser 2a338b7c76d5dd0a6b23f1d49affefd40213b0e9
+%global commit_browser aee43000bd994022cd73e32dc50938ab777d4a06
 %global version_cef 4280
 
 Name:           obs-studio
 Version:        27.1.3
-Release:        1%{?dist}
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -164,6 +164,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Oct 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.3-11
+- version-release bump to 11
+- bump obs-browser commit
+
 * Tue Oct 05 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.3-1
 - Update to 27.1.3
 
