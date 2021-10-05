@@ -7,8 +7,8 @@
 %global version_cef 4280
 
 Name:           obs-studio
-Version:        27.1.1
-Release:        11%{?dist}
+Version:        27.1.3
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -164,6 +164,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Oct 05 2021 Neal Gompa <ngompa@fedoraproject.org> - 27.1.3-1
+- Update to 27.1.3
+
 * Wed Sep 29 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.1-11
 - version-release bump to 11
 
