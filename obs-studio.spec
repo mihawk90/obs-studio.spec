@@ -2,12 +2,12 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit_vst 0dc95ed584b3f14ca308706d0d0324252bd9700b
-%global commit_browser aee43000bd994022cd73e32dc50938ab777d4a06
-%global version_cef 4280
+%global commit_vst 1dde4c37a5d40dc1486c84ee544531cf807ca35d
+%global commit_browser 3e76675a1a6c13fee9224c15b97dba24cb2539d3
+%global version_cef 4638
 
 Name:           obs-studio
-Version:        27.1.3
+Version:        27.2.0~beta1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -45,8 +45,10 @@ BuildRequires:  libX11-devel
 BuildRequires:  libxcb-devel
 BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
+BuildRequires:  libxkbcommon-devel
 BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
+BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
@@ -148,7 +150,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_bindir}/obs-ffmpeg-mux
 %{_datadir}/metainfo/com.obsproject.Studio.appdata.xml
 %{_datadir}/applications/com.obsproject.Studio.desktop
-%{_datadir}/icons/hicolor/256x256/apps/com.obsproject.Studio.png
+%{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
 %{_datadir}/obs/
 
 %files libs
@@ -164,6 +166,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu Dec 30 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0-beta1-11
+- Update to 27.2.0-beta1
+- added libxkbcommon-devel and pciutils-devel
+- fix file list to accomodate for new icons
+- bump obs-browser commit
+- bump obs-vst commit
+- bump CEF version
+
 * Wed Oct 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.3-11
 - version-release bump to 11
 - bump obs-browser commit
