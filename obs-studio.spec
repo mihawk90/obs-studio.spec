@@ -7,7 +7,7 @@
 %global version_cef 4638
 
 Name:           obs-studio
-Version:        27.2.0~beta1
+Version:        27.2.0~beta2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -166,7 +166,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
-* Thu Dec 30 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0-beta1-11
+* Fri Dec 31 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0~beta2-11
+- Update to 27.2.0-beta2
+
+* Thu Dec 30 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0~beta1-11
 - Update to 27.2.0-beta1
 - added libxkbcommon-devel and pciutils-devel
 - fix file list to accomodate for new icons
