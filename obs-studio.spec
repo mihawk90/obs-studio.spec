@@ -2,12 +2,12 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit_vst 31c2fc60e7f772cf35c7c2208cf0515fd2420d61
-%global commit_browser e1e22e833a6c1e136c1878c216bfae396caadd89
+%global commit_vst a75101793faf8bfb33d660dfd95affc55155359a
+%global commit_browser afe9fee0b7d73d7c322453573e27673bdf1aab8f
 %global version_cef 4638
 
 Name:           obs-studio
-Version:        27.2.0~beta4
+Version:        27.2.0~rc1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -166,6 +166,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Jan 31 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0~rc1-11
+- Update to 27.2.0-rc1
+- bump obs-browser commit
+- bump obs-vst commit
+
 * Mon Jan 24 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0~beta4-11
 - Update to 27.2.0-beta4
 - bump obs-browser commit
