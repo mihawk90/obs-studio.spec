@@ -15,6 +15,10 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
+%if 0%{?fedora} && 0%{?fedora} > 35
+ExcludeArch:    ppc64le
+%endif
+
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
 BuildRequires:  ninja-build
