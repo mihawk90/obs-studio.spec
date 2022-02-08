@@ -2,11 +2,11 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit1 a75101793faf8bfb33d660dfd95affc55155359a
+%global commit1 8ad3f64e702ac4f1799b209a511620eb1d096a01
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.2.0~rc1
+Version:        27.2.0~rc4
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -141,6 +141,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Feb 08 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.0~rc4-1
+- Update to 27.2.0~rc4
+
 * Mon Feb 07 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.0~rc1-1
 - Update to 27.2.0~rc1
 
