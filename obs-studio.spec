@@ -2,18 +2,22 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit1 0dc95ed584b3f14ca308706d0d0324252bd9700b
+%global commit1 8ad3f64e702ac4f1799b209a511620eb1d096a01
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 Name:           obs-studio
-Version:        27.1.3
-Release:        3%{?dist}
+Version:        27.2.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
+
+%if 0%{?fedora} && 0%{?fedora} > 35
+ExcludeArch:    ppc64le
+%endif
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -42,8 +46,10 @@ BuildRequires:  libX11-devel
 BuildRequires:  libxcb-devel
 BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
+BuildRequires:  libxkbcommon-devel
 BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
+BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
@@ -119,7 +125,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_bindir}/obs-ffmpeg-mux
 %{_datadir}/metainfo/com.obsproject.Studio.appdata.xml
 %{_datadir}/applications/com.obsproject.Studio.desktop
-%{_datadir}/icons/hicolor/256x256/apps/com.obsproject.Studio.png
+%{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
 %{_datadir}/obs/
 
 %files libs
@@ -135,8 +141,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
-* Mon Feb 14 2022 Nicolas Chauvet <kwizart@gmail.com> - 27.1.3-3
-- rebuilt
+* Mon Feb 14 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.0-1
+- Update to 27.2.0 final
+
+* Tue Feb 08 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.0~rc4-1
+- Update to 27.2.0~rc4
+
+* Mon Feb 07 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.0~rc1-1
+- Update to 27.2.0~rc1
 
 * Wed Dec 01 2021 Nicolas Chauvet <kwizart@gmail.com> - 27.1.3-2
 - Rebuilt
