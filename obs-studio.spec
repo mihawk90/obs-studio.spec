@@ -102,6 +102,9 @@ tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DBUILD_BROWSER=OFF \
+%if 0%{?rhel} && 0%{?rhel} < 9
+       -DENABLE_PIPEWIRE=OFF \
+%endif
        -DOpenGL_GL_PREFERENCE=GLVND
 %cmake_build
 
