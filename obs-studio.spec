@@ -7,8 +7,8 @@
 %global version_cef 4638
 
 Name:           obs-studio
-Version:        27.2.0~rc1
-Release:        11%{?dist}
+Version:        27.2.0
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -17,6 +17,10 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_ti
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
+
+%if 0%{?fedora} && 0%{?fedora} > 35
+ExcludeArch:    ppc64le
+%endif
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -113,6 +117,9 @@ tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
+%if 0%{?rhel} && 0%{?rhel} < 9
+       -DENABLE_PIPEWIRE=OFF \
+%endif
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
@@ -166,6 +173,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Feb 14 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.0-1
+- Update to 27.2.0 final
+
+* Tue Feb 08 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.0~rc4-1
+- Update to 27.2.0~rc4
+
+* Mon Feb 07 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.0~rc1-1
+- Update to 27.2.0~rc1
+
 * Mon Jan 31 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.0~rc1-11
 - Update to 27.2.0-rc1
 - bump obs-browser commit
@@ -191,6 +207,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 - bump obs-browser commit
 - bump obs-vst commit
 - bump CEF version
+
+* Wed Dec 01 2021 Nicolas Chauvet <kwizart@gmail.com> - 27.1.3-2
+- Rebuilt
 
 * Wed Oct 06 2021 Tarulia <mihawk.90+git@googlemail.com> - 27.1.3-11
 - version-release bump to 11
