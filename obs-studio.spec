@@ -7,7 +7,7 @@
 %global version_cef 4638
 
 Name:           obs-studio
-Version:        27.2.1
+Version:        27.2.2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -173,6 +173,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu Mar 17 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.2-11
+- Update to 27.2.2
+
 * Thu Feb 24 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.1-11
 - Update to 27.2.1
 - bump obs-browser commit
