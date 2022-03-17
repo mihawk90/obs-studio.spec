@@ -49,7 +49,11 @@ cp /var/lib/mock/fedora-$frel-x86_64/result/obs-studio-*$mver-$rver.fc$frel.*.rp
 sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.x86_64.rpm.sha512
 sha512sum obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm.sha512
 echo "Copied RPM to current directory. Enter sudo-password to install using DNF. Press Ctrl-c to cancel installation."
-sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
+
+if [ "$1" == "install" ]; then
+	sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
+fi
+
 popd
 
 ### clean up client secrets
