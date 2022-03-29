@@ -6,6 +6,13 @@
 %global commit_browser 915761778ec1eae99e740ad4bf63b40db3142ee2
 %global version_cef 4638
 
+%ifarch %{power64}
+# LuaJIT is not available for POWER
+%bcond_with lua_scripting
+%else
+%bcond_without lua_scripting
+%endif
+
 Name:           obs-studio
 Version:        27.2.2
 Release:        11%{?dist}
@@ -18,10 +25,6 @@ Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 
-%if 0%{?fedora} && 0%{?fedora} > 35
-ExcludeArch:    ppc64le
-%endif
-
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
 BuildRequires:  ninja-build
@@ -29,17 +32,11 @@ BuildRequires:  libappstream-glib
 
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
-%if 0%{?fedora} || 0%{?rhel} >= 9
 BuildRequires:  fdk-aac-free-devel
-%endif
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
-%if 0%{?fedora} >= 34 || 0%{?rhel} >= 9
 BuildRequires:  pipewire-jack-audio-connection-kit-devel
-%else
-BuildRequires:  jack-audio-connection-kit-devel
-%endif
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libftl-devel
@@ -50,7 +47,9 @@ BuildRequires:  libxcb-devel
 BuildRequires:  libXcomposite-devel
 BuildRequires:  libXinerama-devel
 BuildRequires:  libxkbcommon-devel
+%if %{with lua_scripting}
 BuildRequires:  luajit-devel
+%endif
 BuildRequires:  mbedtls-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
@@ -117,8 +116,8 @@ tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
-%if 0%{?rhel} && 0%{?rhel} < 9
-       -DENABLE_PIPEWIRE=OFF \
+%if ! %{with lua_scripting}
+       -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
@@ -175,6 +174,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %changelog
 * Thu Mar 17 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.2-11
 - Update to 27.2.2
+
+* Sat Feb 26 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.1-1
+- Update to 27.2.1
+- Disable Lua scripting for POWER to fix ppc64le build
+- Drop legacy Fedora and EL8 stuff
 
 * Thu Feb 24 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.1-11
 - Update to 27.2.1
