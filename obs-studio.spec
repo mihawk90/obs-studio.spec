@@ -36,6 +36,7 @@ BuildRequires:  freetype-devel
 BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
+BuildRequires:  libdrm-devel
 BuildRequires:  libftl-devel
 BuildRequires:  libGL-devel
 BuildRequires:  libv4l-devel
