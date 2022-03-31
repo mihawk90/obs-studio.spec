@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        27.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -143,6 +143,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu Mar 31 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.1-2
+- Rebuild for new qt
+
 * Sat Feb 26 2022 Neal Gompa <ngompa@fedoraproject.org> - 27.2.1-1
 - Update to 27.2.1
 - Disable Lua scripting for POWER to fix ppc64le build
