@@ -15,7 +15,7 @@
 
 Name:           obs-studio
 Version:        27.2.4
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -24,6 +24,7 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_ti
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
+Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/v16.1.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -113,6 +114,13 @@ tar -xf %{SOURCE2} -C plugins/obs-browser --strip-components=1
 mkdir -p %{_builddir}/SOURCES/CEF
 tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 
+# unpack AJA Libs
+mkdir -p %{_builddir}/SOURCES/AJA/cmake-build
+tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA --strip-components=1
+# compile AJA libs
+cd %{_builddir}/SOURCES/AJA/cmake-build
+cmake -DCMAKE_BUILD_TYPE=Release -GNinja ..
+ninja -f build.ninja
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
@@ -122,6 +130,7 @@ tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
+       -DAJA_LIBRARIES_INCLUDE_DIR="%{_builddir}/SOURCES/AJA" -DAJA_NTV2_LIB="%{_builddir}/SOURCES/AJA/cmake-build/ajalibraries/ajantv2/libajantv2.a" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
@@ -173,6 +182,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Apr 17 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.4-13
+- Added support for AJA cards
+
 * Sat Apr 16 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.4-12
 - Bump release after merge
 
