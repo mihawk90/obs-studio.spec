@@ -15,7 +15,7 @@
 
 Name:           obs-studio
 Version:        27.2.4
-Release:        1%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -173,6 +173,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Apr 16 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.4-12
+- Bump release after merge
+
 * Mon Apr 11 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.4-1
 - Update to 27.2.4
 
