@@ -15,7 +15,7 @@
 
 Name:           obs-studio
 Version:        27.2.4
-Release:        11%{?dist}
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -39,6 +39,7 @@ BuildRequires:  freetype-devel
 BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
+BuildRequires:  libdrm-devel
 BuildRequires:  libftl-devel
 BuildRequires:  libGL-devel
 BuildRequires:  libv4l-devel
@@ -172,6 +173,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Apr 11 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.4-1
+- Update to 27.2.4
+
+* Thu Mar 31 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.1-2
+- Rebuild for new qt
+
 * Tue Mar 29 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.4-11
 - Update to 27.2.4
 
