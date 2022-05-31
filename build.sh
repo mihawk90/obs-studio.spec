@@ -42,13 +42,10 @@ fi
 ### build phase
 
 spectool -g $spec --directory ./f_downloads
-mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec
+mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/
 
-mkdir -p f_upload && pushd ./f_upload
-cp /var/lib/mock/fedora-$frel-x86_64/result/obs-studio-*$mver-$rver.fc$frel.*.rpm .
-sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.x86_64.rpm.sha512
-sha512sum obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm.sha512
-echo "Copied RPM to current directory. Enter sudo-password to install using DNF. Press Ctrl-c to cancel installation."
+pushd ./f_upload/$frel
+sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.sha512
 
 if [ "$1" == "install" ]; then
 	sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
