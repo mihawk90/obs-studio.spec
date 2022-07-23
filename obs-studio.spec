@@ -145,7 +145,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 %changelog
 * Sat Jul 23 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.4-4
-- Rebuild for new ffmpeg
+- Rebuild for new qt5
 
 * Sat Jun 25 2022 Robert-André Mauchin <zebob.m@gmail.com> - 27.2.4-3
 - Rebuilt for Python 3.11
