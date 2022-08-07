@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        27.2.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -144,6 +144,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Aug 07 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 27.2.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
+  5.1
+
 * Sat Jul 23 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.4-4
 - Rebuild for new qt5
 
