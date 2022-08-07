@@ -22,6 +22,9 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
 
+# https://github.com/obsproject/obs-studio/commit/e66542075d5d2cb51a14a0bdf3458ac10757de64
+Patch100:       %{name}-27.2.4-ffmpeg5.patch
+
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
 BuildRequires:  ninja-build
@@ -98,10 +101,8 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 # Prepare plugins/obs-vst
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
-# Fix ffmpeg 5.1 FTBFS
-%if 0%{?fedora} && 0%{?fedora} >= 37
-sed -e 's/-Werror-implicit-function-declaration//g' -i CMakeLists.txt
-%endif
+# remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
+sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
