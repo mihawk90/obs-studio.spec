@@ -99,7 +99,9 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
 # Fix ffmpeg 5.1 FTBFS
+%if 0%{?fedora} && 0%{?fedora} >= 37
 sed -e 's/-Werror-implicit-function-declaration//g' -i CMakeLists.txt
+%endif
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
