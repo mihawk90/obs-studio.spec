@@ -98,6 +98,9 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 # Prepare plugins/obs-vst
 tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
 
+# Fix ffmpeg 5.1 FTBFS
+sed -e 's/-Werror-implicit-function-declaration//g' -i CMakeLists.txt
+
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
        -DUNIX_STRUCTURE=1 -GNinja \
