@@ -11,7 +11,7 @@
 
 Name:           obs-studio
 Version:        28.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -50,10 +50,18 @@ BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
+%if 0%{?fedora} && 0%{?fedora} > 37
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qtwayland-devel
+%else
+BuildRequires:  qt5-qtbase-devel
+BuildRequires:  qt5-qtbase-private-devel
+BuildRequires:  qt5-qtsvg-devel
+BuildRequires:  qt5-qtwayland-devel
+BuildRequires:  qt5-qtx11extras-devel
+%endif
 BuildRequires:  speexdsp-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
@@ -148,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-4
+- Use qt6 for rawhide only
+
 * Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-3
 - Fix wrong svg names
 
