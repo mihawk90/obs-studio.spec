@@ -1,9 +1,12 @@
-%undefine __cmake_in_source_build
+%global __brp_check_rpaths %{nil}
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit1 8ad3f64e702ac4f1799b209a511620eb1d096a01
+%global commit1 b6e0888084ab623f0a73e8cb7ee5dc341e56fda1
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+
+%global commit2 5716577019b1ccda01a12db2cba35a023082b7ad
+%global shortcommit2 %(c=%{commit1}; echo ${c:0:7})
 
 %ifarch %{power64}
 # LuaJIT is not available for POWER
@@ -13,17 +16,16 @@
 %endif
 
 Name:           obs-studio
-Version:        27.2.4
-Release:        5%{?dist}
+Version:        28.0.1
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-Source1:        https://github.com/obsproject/obs-vst/archive/%{commit1}/obs-vst-%{shortcommit1}.tar.gz
-
-# https://github.com/obsproject/obs-studio/commit/e66542075d5d2cb51a14a0bdf3458ac10757de64
-Patch100:       %{name}-27.2.4-ffmpeg5.patch
+# Add the missing submodules and set as disabled
+Source1:        https://github.com/obsproject/obs-browser/archive/%{commit1}/obs-browser-%{shortcommit1}.tar.gz
+Source2:        https://github.com/obsproject/obs-websocket/archive/%{commit2}/obs-websocket-%{shortcommit2}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -56,11 +58,10 @@ BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
-BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtbase-private-devel
-BuildRequires:  qt5-qtsvg-devel
-BuildRequires:  qt5-qtwayland-devel
-BuildRequires:  qt5-qtx11extras-devel
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  speexdsp-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
@@ -98,8 +99,9 @@ Header files for Open Broadcaster Software
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
-# Prepare plugins/obs-vst
-tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
+# Prepare the missing submodules
+tar -xf %{SOURCE1} -C plugins/obs-browser --strip-components=1
+tar -xf %{SOURCE2} -C plugins/obs-websocket --strip-components=1
 
 # remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
 sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
@@ -108,6 +110,9 @@ sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 %cmake -DOBS_VERSION_OVERRIDE=%{version} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DBUILD_BROWSER=OFF \
+       -DENABLE_WEBSOCKET=OFF \
+       -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
+       -DENABLE_AJA=OFF \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
 %endif
@@ -120,7 +125,7 @@ sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
-install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
+install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/libobs/
 
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
@@ -145,11 +150,18 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_libdir}/*.so.*
 
 %files devel
-%{_libdir}/cmake/LibObs/
+%{_libdir}/cmake/libobs/
+%{_libdir}/cmake/obs-frontend-api/
 %{_libdir}/pkgconfig/libobs.pc
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-1
+- Update to 28.0.1
+- Remove vst sub-module as it's qt5 only
+- Add browser and websocket sub-modules so the source compiles
+  Upstream can fix their own mess!
+
 * Sun Aug 07 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 27.2.4-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
