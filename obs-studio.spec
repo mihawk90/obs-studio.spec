@@ -2,12 +2,6 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit1 b6e0888084ab623f0a73e8cb7ee5dc341e56fda1
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-
-%global commit2 5716577019b1ccda01a12db2cba35a023082b7ad
-%global shortcommit2 %(c=%{commit1}; echo ${c:0:7})
-
 %ifarch %{power64}
 # LuaJIT is not available for POWER
 %bcond_with lua_scripting
@@ -17,15 +11,12 @@
 
 Name:           obs-studio
 Version:        28.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-# Add the missing submodules and set as disabled
-Source1:        https://github.com/obsproject/obs-browser/archive/%{commit1}/obs-browser-%{shortcommit1}.tar.gz
-Source2:        https://github.com/obsproject/obs-websocket/archive/%{commit2}/obs-websocket-%{shortcommit2}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -99,9 +90,9 @@ Header files for Open Broadcaster Software
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
-# Prepare the missing submodules
-tar -xf %{SOURCE1} -C plugins/obs-browser --strip-components=1
-tar -xf %{SOURCE2} -C plugins/obs-websocket --strip-components=1
+# touch the missing submodules
+touch plugins/obs-browser/CMakeLists.txt
+touch plugins/obs-websocket/CMakeLists.txt
 
 # remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
 sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
@@ -156,6 +147,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-2
+- touch the missing sub-modules instead
+
 * Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-1
 - Update to 28.0.1
 - Remove vst sub-module as it's qt5 only
