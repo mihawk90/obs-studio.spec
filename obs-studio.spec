@@ -1,8 +1,7 @@
-%undefine __cmake_in_source_build
+%global __brp_check_rpaths %{nil}
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit_vst 8ad3f64e702ac4f1799b209a511620eb1d096a01
 %global commit_browser 915761778ec1eae99e740ad4bf63b40db3142ee2
 %global version_cef 4638
 
@@ -14,17 +13,17 @@
 %endif
 
 Name:           obs-studio
-Version:        27.2.4
-Release:        13%{?dist}
+Version:        28.0.1
+Release:        4%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
-Source1:        https://github.com/obsproject/obs-vst/archive/%{commit_vst}/obs-vst-%{commit_vst}.tar.gz
 Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/v16.1.tar.gz
+Patch0:         %{name}-%{version}_fix_svg_names.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -57,11 +56,18 @@ BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
+%if 0%{?fedora} && 0%{?fedora} > 37
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  qt6-qtwayland-devel
+%else
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  qt5-qtx11extras-devel
+%endif
 BuildRequires:  speexdsp-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
@@ -105,8 +111,12 @@ Header files for Open Broadcaster Software
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
-# Prepare plugins/obs-vst
-tar -xf %{SOURCE1} -C plugins/obs-vst --strip-components=1
+# touch the missing submodules
+touch plugins/obs-browser/CMakeLists.txt
+touch plugins/obs-websocket/CMakeLists.txt
+
+# remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
+sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 
 # Prepare plugins/obs-browser
 tar -xf %{SOURCE2} -C plugins/obs-browser --strip-components=1
@@ -125,6 +135,7 @@ ninja -f build.ninja
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
+       -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
 %endif
@@ -147,7 +158,7 @@ ninja -f build.ninja
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
-install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/LibObs/
+install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/libobs/
 
 # copy CEF license because we need to distribute it with the binary
 cp %{_builddir}/SOURCES/CEF/LICENSE.txt cef_license.txt
@@ -177,11 +188,40 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_libdir}/*.so.*
 
 %files devel
-%{_libdir}/cmake/LibObs/
+%{_libdir}/cmake/libobs/
+%{_libdir}/cmake/obs-frontend-api/
 %{_libdir}/pkgconfig/libobs.pc
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-4
+- Use qt6 for rawhide only
+
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-3
+- Fix wrong svg names
+
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-2
+- touch the missing sub-modules instead
+
+* Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-1
+- Update to 28.0.1
+- Remove vst sub-module as it's qt5 only
+- Add browser and websocket sub-modules so the source compiles
+  Upstream can fix their own mess!
+
+* Sun Aug 07 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 27.2.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
+  5.1
+
+* Sat Jul 23 2022 Leigh Scott <leigh123linux@gmail.com> - 27.2.4-4
+- Rebuild for new qt5
+
+* Sat Jun 25 2022 Robert-André Mauchin <zebob.m@gmail.com> - 27.2.4-3
+- Rebuilt for Python 3.11
+
+* Sun Jun 12 2022 Sérgio Basto <sergio@serjux.com> - 27.2.4-2
+- Mass rebuild for x264-0.164
+
 * Sun Apr 17 2022 Tarulia <mihawk.90+git@googlemail.com> - 27.2.4-13
 - Added support for AJA cards
 
