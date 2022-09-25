@@ -5,13 +5,11 @@ git checkout master
 git pull
 obsVer=$(git tag --list --sort=taggerdate | tail -n1)
 git checkout $obsVer
-git submodule update
+git submodule update --init --recursive
 git submodule status
 popd
 
 # update commits in spec file
-sed --in-place "s/%global commit_vst .*/%global commit_vst $(git -C  ./obs-studio submodule status | grep obs-vst | cut -d' ' -f2 )/" ./obs-studio.spec
-sed --in-place "s/%global commit_browser .*/%global commit_browser $(git -C ./obs-studio submodule status | grep obs-browser | cut -d' ' -f2 )/" ./obs-studio.spec
 sed --in-place "s/Version:.*/Version:        $obsVer/" ./obs-studio.spec
 sed --in-place "s/Release:.*/Release:        11%{?dist}/" ./obs-studio.spec
 

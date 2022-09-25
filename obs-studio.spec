@@ -2,8 +2,8 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
-%global commit_browser 915761778ec1eae99e740ad4bf63b40db3142ee2
-%global version_cef 4638
+%global version_cef 5060
+%global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
 # LuaJIT is not available for POWER
@@ -13,16 +13,15 @@
 %endif
 
 Name:           obs-studio
-Version:        28.0.1
-Release:        4%{?dist}
+Version:        28.0.2
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
-Source2:        https://github.com/obsproject/obs-browser/archive/%{commit_browser}/obs-browser-%{commit_browser}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
-Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/v16.1.tar.gz
+Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
 Patch0:         %{name}-%{version}_fix_svg_names.patch
 
 BuildRequires:  gcc
@@ -105,43 +104,40 @@ Header files for Open Broadcaster Software
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version_no_tilde}
+%autosetup -p1 -n %{name}
 
 # rpmlint reports E: hardcoded-library-path
 # replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
 sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
-# touch the missing submodules
-touch plugins/obs-browser/CMakeLists.txt
-touch plugins/obs-websocket/CMakeLists.txt
-
 # remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
 sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 
-# Prepare plugins/obs-browser
-tar -xf %{SOURCE2} -C plugins/obs-browser --strip-components=1
-# unpack CEF for later use
+# unpack CEF wrapper
 mkdir -p %{_builddir}/SOURCES/CEF
 tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 
 # unpack AJA Libs
-mkdir -p %{_builddir}/SOURCES/AJA/cmake-build
-tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA --strip-components=1
+mkdir -p %{_builddir}/SOURCES/AJA/source/cmake-build
+tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 # compile AJA libs
-cd %{_builddir}/SOURCES/AJA/cmake-build
-cmake -DCMAKE_BUILD_TYPE=Release -GNinja ..
+cd %{_builddir}/SOURCES/AJA/source/cmake-build
+cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_INSTALL_PREFIX=%{_builddir}/SOURCES/AJA/install ..
 ninja -f build.ninja
+cmake --install ajalibraries/ajantv2
+
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
+       -DBUILD_FOR_PPA=ON \
        -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
+       -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
-       -DAJA_LIBRARIES_INCLUDE_DIR="%{_builddir}/SOURCES/AJA" -DAJA_NTV2_LIB="%{_builddir}/SOURCES/AJA/cmake-build/ajalibraries/ajantv2/libajantv2.a" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
@@ -194,6 +190,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Sep 25 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.2-11
+- Update to 28.0.2
+- remove submodule downloads (they are now handled in the build script)
+- adjust AJA compilation and related flags for new build system
+
 * Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-4
 - Use qt6 for rawhide only
 

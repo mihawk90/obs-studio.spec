@@ -5,11 +5,11 @@
 spec=./obs-studio.spec
 
 if [ "$1" == "frel" ] && [ "$2" != "" ]; then
-    frel=$2
-    echo "Fedora Release version specified. Using $frel."
+	frel=$2
+	echo "Fedora Release version specified. Using $frel."
 else
-    frel=$(rpm -E %fedora)
-    echo "No Fedora Release version specified. Using default $frel."
+	frel=$(rpm -E %fedora)
+	echo "No Fedora Release version specified. Using default $frel."
 fi;
 
 # delimited by spaces, every space is a new "field" for cut, hence field 9 for the version/release
@@ -29,7 +29,6 @@ if [[ -f "./obs-secrets" ]]; then
 		sed --in-place "s/-DRESTREAM_HASH='.*'/-DRESTREAM_HASH='$(cat "./obs-secrets"| grep RESTREAM_HASH | cut -d' ' -f2)'/" $spec
 	fi
 
-	#TODO: YouTube secrets
 	if [[ $(cat "./obs-secrets" | grep YOUTUBE_CLIENTID) ]]; then
 		sed --in-place "s/-DYOUTUBE_CLIENTID='.*'/-DYOUTUBE_CLIENTID='$(cat "./obs-secrets"| grep -w YOUTUBE_CLIENTID | cut -d' ' -f2)'/" $spec
 		sed --in-place "s/-DYOUTUBE_CLIENTID_HASH='.*'/-DYOUTUBE_CLIENTID_HASH='$(cat "./obs-secrets"| grep -w YOUTUBE_CLIENTID_HASH | cut -d' ' -f2)'/" $spec
@@ -40,7 +39,7 @@ if [[ -f "./obs-secrets" ]]; then
 fi
 
 ### build phase
-
+tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
 spectool -g $spec --directory ./f_downloads
 mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/
 
