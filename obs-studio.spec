@@ -10,14 +10,14 @@
 %endif
 
 Name:           obs-studio
-Version:        28.0.1
-Release:        4%{?dist}
+Version:        28.0.2
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         %{name}-%{version}_fix_svg_names.patch
+Patch0:         %{name}-28.0.1_fix_svg_names.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -30,7 +30,6 @@ BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
-BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libdrm-devel
@@ -48,6 +47,7 @@ BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
+BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
 %if 0%{?fedora} && 0%{?fedora} > 37
@@ -111,6 +111,8 @@ sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
        -DUNIX_STRUCTURE=1 -GNinja \
        -DBUILD_BROWSER=OFF \
        -DENABLE_WEBSOCKET=OFF \
+       -DENABLE_JACK=ON \
+       -DENABLE_LIBFDK=ON \
        -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
        -DENABLE_AJA=OFF \
 %if ! %{with lua_scripting}
@@ -156,6 +158,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Sep 26 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.2-1
+- Update to 28.0.2
+- Enable jack (rfbz#6419)
+
 * Tue Sep 13 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.1-4
 - Use qt6 for rawhide only
 
