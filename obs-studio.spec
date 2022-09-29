@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        28.0.2
-Release:        11%{?dist}
+Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -22,7 +22,7 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
-Patch0:         %{name}-%{version}_fix_svg_names.patch
+Patch0:         %{name}-28.0.1_fix_svg_names.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -35,7 +35,6 @@ BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
-BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libdrm-devel
@@ -53,6 +52,7 @@ BuildRequires:  luajit-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
+BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
 %if 0%{?fedora} && 0%{?fedora} > 37
@@ -131,6 +131,8 @@ cmake --install ajalibraries/ajantv2
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DBUILD_FOR_PPA=ON \
+       -DBUILD_BROWSER=OFF \
+       -DENABLE_WEBSOCKET=OFF \
        -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
@@ -190,6 +192,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Sep 26 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.2-1
+- Update to 28.0.2
+- Enable jack (rfbz#6419)
+
 * Sun Sep 25 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.2-11
 - Update to 28.0.2
 - remove submodule downloads (they are now handled in the build script)
