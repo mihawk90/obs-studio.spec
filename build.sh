@@ -41,6 +41,7 @@ fi
 ### build phase
 tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
 spectool -g $spec --directory ./f_downloads
+rm -rf ./f_upload/$frel/
 mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/
 
 pushd ./f_upload/$frel
