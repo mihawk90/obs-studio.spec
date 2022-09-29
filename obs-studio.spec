@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        28.0.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -131,8 +131,6 @@ cmake --install ajalibraries/ajantv2
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
        -DUNIX_STRUCTURE=1 -GNinja \
        -DBUILD_FOR_PPA=ON \
-       -DBUILD_BROWSER=OFF \
-       -DENABLE_WEBSOCKET=OFF \
        -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
@@ -192,6 +190,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Fri Sep 30 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.2-13
+- re-enable obs-websocket
+
 * Thu Sep 29 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.2-12
 - Rebuild for new qt5
 
