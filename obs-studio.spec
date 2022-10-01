@@ -13,8 +13,8 @@
 %endif
 
 Name:           obs-studio
-Version:        28.0.2
-Release:        13%{?dist}
+Version:        28.0.3
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -22,7 +22,6 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
-Patch0:         %{name}-28.0.1_fix_svg_names.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -190,6 +189,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Oct 01 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.3-11
+- Update to 28.0.3
+- Remove patch as it is now upstream
+
 * Fri Sep 30 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.2-13
 - re-enable obs-websocket
 
