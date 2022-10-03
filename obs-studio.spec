@@ -10,14 +10,13 @@
 %endif
 
 Name:           obs-studio
-Version:        28.0.2
+Version:        28.0.3
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         %{name}-28.0.1_fix_svg_names.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -158,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Oct 03 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.3-1
+- Update to 28.0.3
+
 * Mon Sep 26 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.2-1
 - Update to 28.0.2
 - Enable jack (rfbz#6419)
