@@ -189,6 +189,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Oct 03 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.3-1
+- Update to 28.0.3
+
 * Sat Oct 01 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.0.3-11
 - Update to 28.0.3
 - Remove patch as it is now upstream
