@@ -13,13 +13,13 @@
 %endif
 
 Name:           obs-studio
-Version:        28.0.3
+Version:        28.1.0~beta1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
-Source0:        https://github.com/obsproject/obs-studio/archive/%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
 Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
 
@@ -189,6 +189,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Oct 12 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.1.0~beta1-11
+- Update to 28.1.0-beta1
+
 * Mon Oct 03 2022 Leigh Scott <leigh123linux@gmail.com> - 28.0.3-1
 - Update to 28.0.3
 
