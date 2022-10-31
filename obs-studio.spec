@@ -13,7 +13,7 @@
 %endif
 
 Name:           obs-studio
-Version:        28.1.0~rc1
+Version:        28.1.0
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -189,6 +189,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Tue Nov 01 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.1.0-11
+- Update to 28.1.0
+
 * Fri Oct 21 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.1.0~rc1-11
 - Update to 28.1.0-rc1
 
