@@ -10,7 +10,7 @@
 %endif
 
 Name:           obs-studio
-Version:        28.1.1
+Version:        28.1.2
 Release:        1%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Nov 06 2022 Leigh Scott <leigh123linux@gmail.com> - 28.1.2-1
+- Update to 28.1.2
+
 * Thu Nov 03 2022 Leigh Scott <leigh123linux@gmail.com> - 28.1.1-1
 - Update to 28.1.1
 
