@@ -12,6 +12,13 @@ else
 	echo "No Fedora Release version specified. Using default $frel."
 fi;
 
+if [ "$1" == "all" ]; then
+	echo "Building for Fedora Release $(($frel - 1)), $frel, and $(($frel + 1))."
+	./build.sh frel $(($frel - 1))
+	./build.sh frel $(($frel + 1))
+	./build.sh $2
+fi;
+
 # delimited by spaces, every space is a new "field" for cut, hence field 9 for the version/release
 mver=$(cat $spec | grep Version\: | cut -d" " -f9)
 rver=$(cat $spec | grep Release\: | cut -d" " -f9 | sed -e 's/%{?dist}//')
