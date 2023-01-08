@@ -13,8 +13,8 @@
 %endif
 
 Name:           obs-studio
-Version:        28.1.2
-Release:        12%{?dist}
+Version:        29.0.0
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -40,6 +40,7 @@ BuildRequires:  libdrm-devel
 BuildRequires:  libftl-devel
 BuildRequires:  libGL-devel
 BuildRequires:  libv4l-devel
+BuildRequires:  libva-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libxcb-devel
 BuildRequires:  libXcomposite-devel
@@ -189,6 +190,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Jan 07 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.0.0-11
+- Update to 29.0.0
+
 * Sat Nov 26 2022 Tarulia <mihawk.90+git@googlemail.com> - 28.1.2-12
 - Bump release after merge
 
