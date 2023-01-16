@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        29.0.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -190,6 +190,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Jan 16 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.0.0-12
+- Rebuild for new qt5
+
 * Sat Jan 07 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.0.0-11
 - Update to 29.0.0
 
