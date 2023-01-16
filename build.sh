@@ -17,6 +17,7 @@ if [ "$1" == "all" ]; then
 	./build.sh frel $(($frel - 1))
 	./build.sh frel $(($frel + 1))
 	./build.sh $2
+	exit
 fi;
 
 # delimited by spaces, every space is a new "field" for cut, hence field 9 for the version/release
