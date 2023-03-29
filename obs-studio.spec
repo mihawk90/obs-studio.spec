@@ -13,8 +13,8 @@
 %endif
 
 Name:           obs-studio
-Version:        29.0.2
-Release:        12%{?dist}
+Version:        29.1.0~beta1
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -29,16 +29,19 @@ BuildRequires:  ninja-build
 BuildRequires:  libappstream-glib
 
 BuildRequires:  alsa-lib-devel
+BuildRequires:  asio-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdk-aac-free-devel
 BuildRequires:  ffmpeg-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
 BuildRequires:  jansson-devel
+BuildRequires:  json-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libdrm-devel
 BuildRequires:  libftl-devel
 BuildRequires:  libGL-devel
+BuildRequires:  libuuid-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  libva-devel
 BuildRequires:  libX11-devel
@@ -72,6 +75,7 @@ BuildRequires:  swig
 BuildRequires:  systemd-devel
 BuildRequires:  vlc-devel
 BuildRequires:  wayland-devel
+BuildRequires:  websocketpp-devel
 BuildRequires:  x264-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
@@ -112,6 +116,11 @@ sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
 
 # remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
 sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
+
+## remove Werror to fix compile error
+# there's probably a cleaner way to do this by modifying what compile flags
+# the rpmbuilder adds
+sed -i 's|    -Werror||g' cmake/Modules/CompilerConfig.cmake
 
 # unpack CEF wrapper
 mkdir -p %{_builddir}/SOURCES/CEF
@@ -190,6 +199,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Mar 29 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.1.0~beta1-11
+- Update to 29.1.0~beta1
+- added asio, json, libuuid, and websocketpp build dependencies
+- added quick and dirty workaround for compile error
+
 * Sun Feb 12 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.0.2-12
 - Rebuild for new Qt5
 
