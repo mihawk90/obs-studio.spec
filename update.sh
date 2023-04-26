@@ -24,6 +24,7 @@ git submodule status
 popd
 
 # update commits in spec file
+obsVer=$(echo "$obsVer" | sed "s/-/~/")
 sed --in-place "s/Version:.*/Version:        $obsVer/" $spec
 sed --in-place "s/Release:.*/Release:        11%{?dist}/" $spec
 
