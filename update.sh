@@ -34,5 +34,6 @@ fi
 
 sed --in-place "s/%changelog/%changelog\n\* $(date +'%a %b %d %Y') Tarulia <mihawk.90+git@googlemail.com> - $obsVer-11\n- Update to $obsVer\n/" $spec
 
-git diff $spec
+git add $spec
+git diff --staged
 
