@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        29.1.3
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -39,7 +39,9 @@ BuildRequires:  jansson-devel
 BuildRequires:  json-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libdrm-devel
+%if 0%{?fedora}
 BuildRequires:  libftl-devel
+%endif
 BuildRequires:  libGL-devel
 BuildRequires:  libuuid-devel
 BuildRequires:  libv4l-devel
@@ -199,6 +201,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Jul 08 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.1.3-12
+- exclude libftl-devel from RHEL builds since it's not available;
+  OBS uses the in-tree FTL-SDK instead
+
 * Mon Jun 19 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.1.3-11
 - Update to 29.1.3
 
