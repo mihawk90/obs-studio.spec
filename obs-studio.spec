@@ -13,8 +13,8 @@
 %endif
 
 Name:           obs-studio
-Version:        29.1.3
-Release:        12%{?dist}
+Version:        30.0.0~beta1
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -55,23 +55,16 @@ BuildRequires:  libxkbcommon-devel
 BuildRequires:  luajit-devel
 %endif
 BuildRequires:  mbedtls-devel
+BuildRequires:  oneVPL-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pipewire-jack-audio-connection-kit-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python3-devel
-%if 0%{?fedora} && 0%{?fedora} > 37
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qtwayland-devel
-%else
-BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtbase-private-devel
-BuildRequires:  qt5-qtsvg-devel
-BuildRequires:  qt5-qtwayland-devel
-BuildRequires:  qt5-qtx11extras-devel
-%endif
 BuildRequires:  speexdsp-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
@@ -147,6 +140,7 @@ cmake --install ajalibraries/ajantv2
        -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
+       -DENABLE_WEBRTC=OFF \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
@@ -165,7 +159,6 @@ cmake --install ajalibraries/ajantv2
 
 # Add missing files to enable the build of obs-ndi
 install -Dm644 UI/obs-frontend-api/obs-frontend-api.h %{buildroot}%{_includedir}/obs/
-install -Dm644 cmake/external/ObsPluginHelpers.cmake %{buildroot}%{_libdir}/cmake/libobs/
 
 # copy CEF license because we need to distribute it with the binary
 cp %{_builddir}/SOURCES/CEF/LICENSE.txt cef_license.txt
@@ -201,6 +194,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Thu Aug 17 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta1-11
+- Update to 30.0.0~beta1
+- Removed Qt5 path due to removal from OBS
+- Added oneVPL-devel
+- Disable WebRTC until we figure out how to go about libdatachannel
+
 * Sat Jul 08 2023 Tarulia <mihawk.90+git@googlemail.com> - 29.1.3-12
 - exclude libftl-devel from RHEL builds since it's not available;
   OBS uses the in-tree FTL-SDK instead
