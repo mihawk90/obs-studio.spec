@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        30.0.0~beta3
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -38,6 +38,7 @@ BuildRequires:  freetype-devel
 BuildRequires:  jansson-devel
 BuildRequires:  json-devel
 BuildRequires:  libcurl-devel
+BuildRequires:  libdatachannel-devel
 BuildRequires:  libdrm-devel
 %if 0%{?fedora}
 BuildRequires:  libftl-devel
@@ -141,7 +142,6 @@ cmake --install ajalibraries/ajantv2
        -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
-       -DENABLE_WEBRTC=OFF \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
@@ -195,6 +195,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Wed Sep 13 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta3-12
+- Enabled WebRTC
+- Added libdatachannel-devel (thanks Neal Gompa)
+
 * Sun Sep 10 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta3-11
 - Update to 30.0.0~beta3
 - Added libqrcodegencpp-devel
