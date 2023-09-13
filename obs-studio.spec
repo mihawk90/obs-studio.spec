@@ -13,7 +13,7 @@
 %endif
 
 Name:           obs-studio
-Version:        30.0.0~beta2
+Version:        30.0.0~beta3
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -43,6 +43,7 @@ BuildRequires:  libdrm-devel
 BuildRequires:  libftl-devel
 %endif
 BuildRequires:  libGL-devel
+BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  libuuid-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  libva-devel
@@ -194,6 +195,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sun Sep 10 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta3-11
+- Update to 30.0.0~beta3
+- Added libqrcodegencpp-devel
+
 * Sun Aug 20 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta2-11
 - Update to 30.0.0~beta2
 
