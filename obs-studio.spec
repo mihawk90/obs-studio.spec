@@ -13,8 +13,8 @@
 %endif
 
 Name:           obs-studio
-Version:        30.0.0~beta3
-Release:        12%{?dist}
+Version:        30.0.0~rc1
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -195,6 +195,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Sat Oct 14 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~rc1-11
+- Update to 30.0.0~rc1
+
+* Sat Sep 16 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta3-13
+- Rebuild for new libdatachannel
+
 * Wed Sep 13 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.0~beta3-12
 - Enabled WebRTC
 - Added libdatachannel-devel (thanks Neal Gompa)
