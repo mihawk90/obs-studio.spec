@@ -14,7 +14,7 @@
 
 Name:           obs-studio
 Version:        30.0.0~rc1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -84,6 +84,11 @@ Requires:       x264
 
 BuildRequires: %{cef_runtime_deps}
 Requires:      %{cef_runtime_deps}
+
+# The RPM Fusion obs-studio-freeworld package specifies these as Supplements
+# However since we already package the same, they conflict with this package
+Conflicts:     obs-studio-plugin-x264
+Conflicts:     obs-studio-plugin-vlc-video
 
 %description
 Open Broadcaster Software is free and open source
