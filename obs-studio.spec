@@ -147,6 +147,7 @@ cmake --install ajalibraries/ajantv2
        -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
+       -DENABLE_WEBRTC=OFF \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
@@ -202,6 +203,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %changelog
 * Wed Mar 13 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.0-11
 - Update to 30.1.0
+- disable WebRTC support for now until libdatachannel is updated
 
 * Sun Dec 10 2023 Tarulia <mihawk.90+git@googlemail.com> - 30.0.1-11
 - Update to 30.0.1
