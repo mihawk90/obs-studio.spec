@@ -13,7 +13,7 @@
 %endif
 
 Name:           obs-studio
-Version:        30.1.0
+Version:        30.1.1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -40,7 +40,7 @@ BuildRequires:  json-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libdatachannel-devel
 BuildRequires:  libdrm-devel
-%if 0%{?fedora}
+%if 0%{?fedora} < 40
 BuildRequires:  libftl-devel
 %endif
 BuildRequires:  libGL-devel
@@ -173,7 +173,7 @@ cp %{_builddir}/SOURCES/CEF/LICENSE.txt cef_license.txt
 
 %check
 /usr/bin/desktop-file-validate %{buildroot}/%{_datadir}/applications/com.obsproject.Studio.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainfo.xml
 
 %files
 %doc README.rst
@@ -182,7 +182,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %license cef_license.txt
 %{_bindir}/obs
 %{_bindir}/obs-ffmpeg-mux
-%{_datadir}/metainfo/com.obsproject.Studio.appdata.xml
+%{_datadir}/metainfo/com.obsproject.Studio.metainfo.xml
 %{_datadir}/applications/com.obsproject.Studio.desktop
 %{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
 %{_datadir}/obs/
@@ -201,6 +201,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_includedir}/obs/
 
 %changelog
+* Mon Mar 25 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.1-11
+- Update to 30.1.1
+- remove libftl-devel dependency for F40 and above as per package retirement
+
 * Wed Mar 13 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.0-11
 - Update to 30.1.0
 - disable WebRTC support for now until libdatachannel is updated
