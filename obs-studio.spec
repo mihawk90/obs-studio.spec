@@ -2,6 +2,12 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
+%if 0%{?fedora} > 39
+%bcond webrtc 1
+%else
+%bcond webrtc 0
+%endif
+
 %global version_cef 5060
 %global version_aja v16.2-bugfix5
 
@@ -13,7 +19,7 @@
 %endif
 
 Name:           obs-studio
-Version:        30.1.1
+Version:        30.1.2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -38,7 +44,9 @@ BuildRequires:  freetype-devel
 BuildRequires:  jansson-devel
 BuildRequires:  json-devel
 BuildRequires:  libcurl-devel
+%if %{with webrtc}
 BuildRequires:  libdatachannel-devel
+%endif
 BuildRequires:  libdrm-devel
 %if 0%{?fedora} < 40
 BuildRequires:  libftl-devel
@@ -147,7 +155,9 @@ cmake --install ajalibraries/ajantv2
        -DDISABLE_LUA=ON \
 %endif
        -DOpenGL_GL_PREFERENCE=GLVND \
+%if ! %{with webrtc}
        -DENABLE_WEBRTC=OFF \
+%endif
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
@@ -201,6 +211,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Apr 06 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.2-11
+- Update to 30.1.2
+- re-enable WebRTC for F40+; see rhbz#2250836
+
 * Mon Mar 25 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.1-11
 - Update to 30.1.1
 - remove libftl-devel dependency for F40 and above as per package retirement
