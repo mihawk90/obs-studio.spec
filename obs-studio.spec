@@ -19,7 +19,7 @@
 %endif
 
 Name:           obs-studio
-Version:        30.1.2
+Version:        30.2.0~beta1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -65,6 +65,7 @@ BuildRequires:  libxkbcommon-devel
 BuildRequires:  luajit-devel
 %endif
 BuildRequires:  mbedtls-devel
+BuildRequires:  nv-codec-headers
 BuildRequires:  oneVPL-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
@@ -78,6 +79,7 @@ BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  speexdsp-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
+BuildRequires:  uthash-devel
 BuildRequires:  vlc-devel
 BuildRequires:  wayland-devel
 BuildRequires:  websocketpp-devel
@@ -140,10 +142,10 @@ tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 mkdir -p %{_builddir}/SOURCES/AJA/source/cmake-build
 tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 # compile AJA libs
-cd %{_builddir}/SOURCES/AJA/source/cmake-build
-cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_INSTALL_PREFIX=%{_builddir}/SOURCES/AJA/install ..
-ninja -f build.ninja
-cmake --install ajalibraries/ajantv2
+# cd %{_builddir}/SOURCES/AJA/source/cmake-build
+# cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_INSTALL_PREFIX=%{_builddir}/SOURCES/AJA/install ..
+# ninja -f build.ninja
+# cmake --install ajalibraries/ajantv2
 
 
 %build
@@ -159,6 +161,7 @@ cmake --install ajalibraries/ajantv2
        -DENABLE_WEBRTC=OFF \
 %endif
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
+       -DENABLE_AJA=OFF \
        -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
@@ -207,10 +210,17 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %files devel
 %{_libdir}/cmake/libobs/
 %{_libdir}/cmake/obs-frontend-api/
+%{_libdir}/cmake/obs-websocket-api/
 %{_libdir}/pkgconfig/libobs.pc
 %{_includedir}/obs/
 
 %changelog
+* Sat Jun 08 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.2.0~beta1-11
+- Update to 30.2.0~beta1
+- Added uthash-devel and nv-codec-header dependencies
+- include websocket cmake files in -devel subpackage
+- Disable AJA build for now
+
 * Sat Apr 06 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.1.2-11
 - Update to 30.1.2
 - re-enable WebRTC for F40+; see rhbz#2250836
