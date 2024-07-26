@@ -46,7 +46,9 @@ if [[ -f "./obs-secrets" ]]; then
 
 fi
 
+set -x
 ### build phase
+rm ./f_downloads/obs-studio-*.tar.gz
 tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
 spectool -g $spec --directory ./f_downloads
 rm -rf ./f_upload/$frel/
@@ -60,6 +62,8 @@ if [ "$1" == "install" ]; then
 fi
 
 popd
+
+set +x
 
 ### clean up client secrets
 # can always do this with the .* quantifier
