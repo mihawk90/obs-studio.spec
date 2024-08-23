@@ -20,7 +20,7 @@
 
 Name:           obs-studio
 Version:        30.2.3
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -99,6 +99,10 @@ Requires:      %{cef_runtime_deps}
 # However since we already package the same, they conflict with this package
 Conflicts:     obs-studio-plugin-x264
 Conflicts:     obs-studio-plugin-vlc-video
+
+# Fedora > 40 ships obs-studio-plugin-browser as a Supplements weak dep
+# This is also already part of this package
+Conflicts:     obs-studio-plugin-browser
 
 %description
 Open Broadcaster Software is free and open source
@@ -215,6 +219,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Aug 24 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.2.3-12
+- add conflict with obs-studio-plugin-browser
+
 * Fri Aug 16 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.2.3-11
 - Update to 30.2.3
 
