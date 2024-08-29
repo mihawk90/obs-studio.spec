@@ -155,9 +155,10 @@ tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
-       -DUNIX_STRUCTURE=1 -GNinja \
-       -DBUILD_FOR_PPA=ON \
+       -DOBS_CMAKE_VERSION=3 -DCMAKE_BUILD_TYPE=None -GNinja \
        -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
+       -DENABLE_JACK=ON \
+       -DENABLE_LIBFDK=ON \
 %if ! %{with lua_scripting}
        -DDISABLE_LUA=ON \
 %endif
@@ -167,7 +168,7 @@ tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 %endif
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DENABLE_AJA=OFF \
-       -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
+       -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
