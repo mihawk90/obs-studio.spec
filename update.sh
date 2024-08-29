@@ -15,6 +15,7 @@ if [ "$1" == "qt" ]; then
 fi
 
 pushd obs-studio
+git reset --hard
 git checkout master
 git pull
 obsVer=$(git tag --list --sort=taggerdate | tail -n1)
