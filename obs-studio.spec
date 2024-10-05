@@ -8,7 +8,7 @@
 %bcond webrtc 0
 %endif
 
-%global version_cef 5060
+%global version_cef 6533
 %global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
@@ -19,14 +19,14 @@
 %endif
 
 Name:           obs-studio
-Version:        30.2.3
-Release:        12%{?dist}
+Version:        31.0.0~beta1
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
-Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux64.tar.bz2
+Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64.tar.xz
 Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
 
 BuildRequires:  gcc
@@ -48,11 +48,9 @@ BuildRequires:  libcurl-devel
 BuildRequires:  libdatachannel-devel
 %endif
 BuildRequires:  libdrm-devel
-%if 0%{?fedora} < 40
-BuildRequires:  libftl-devel
-%endif
 BuildRequires:  libGL-devel
 BuildRequires:  libqrcodegencpp-devel
+BuildRequires:  librist-devel
 BuildRequires:  libuuid-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  libva-devel
@@ -78,6 +76,7 @@ BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  rnnoise-devel
 BuildRequires:  speexdsp-devel
+BuildRequires:  srt-devel
 BuildRequires:  swig
 BuildRequires:  systemd-devel
 BuildRequires:  uthash-devel
@@ -127,21 +126,12 @@ Header files for Open Broadcaster Software
 %prep
 %autosetup -p1 -n %{name}
 
-# rpmlint reports E: hardcoded-library-path
-# replace OBS_MULTIARCH_SUFFIX by LIB_SUFFIX
-sed -i 's|OBS_MULTIARCH_SUFFIX|LIB_SUFFIX|g' cmake/Modules/ObsHelpers.cmake
-
 # remove -Werror flag to mitigate FTBFS with ffmpeg 5.1
-sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
-
-## remove Werror to fix compile error
-# there's probably a cleaner way to do this by modifying what compile flags
-# the rpmbuilder adds
-sed -i 's|    -Werror||g' cmake/Modules/CompilerConfig.cmake
+#sed -i 's|-Werror-implicit-function-declaration||g' CMakeLists.txt
 
 # unpack CEF wrapper
 mkdir -p %{_builddir}/SOURCES/CEF
-tar -xjf %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
+tar -x --xz -f %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
 
 # unpack AJA Libs
 mkdir -p %{_builddir}/SOURCES/AJA/source/cmake-build
@@ -155,20 +145,18 @@ tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
-       -DOBS_CMAKE_VERSION=3 -DCMAKE_BUILD_TYPE=None -GNinja \
-       -DENABLE_NEW_MPEGTS_OUTPUT=OFF \
-       -DENABLE_JACK=ON \
-       -DENABLE_LIBFDK=ON \
-%if ! %{with lua_scripting}
-       -DDISABLE_LUA=ON \
-%endif
-       -DOpenGL_GL_PREFERENCE=GLVND \
-%if ! %{with webrtc}
-       -DENABLE_WEBRTC=OFF \
-%endif
+       -DCMAKE_BUILD_TYPE=None \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DENABLE_AJA=OFF \
        -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
+       -DENABLE_JACK=ON \
+       -DENABLE_LIBFDK=ON \
+%if ! %{with lua_scripting}
+       -DENABLE_SCRIPTING_LUA=OFF \
+%endif
+%if ! %{with webrtc}
+       -DENABLE_WEBRTC=OFF \
+%endif
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
@@ -221,6 +209,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Oct 05 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta1-1
+- Update to 31.0.0~beta1
+- removed and modified unused/changed build flags
+- added new build flags for default-disabled features
+- removed deprecated FTL dependency
+- re-enable new MPEGTS output and add srt-devel and librist-devel deps for it
+- remove obsolete CMake modifications
+
 * Sat Aug 24 2024 Tarulia <mihawk.90+git@googlemail.com> - 30.2.3-12
 - add conflict with obs-studio-plugin-browser
 
