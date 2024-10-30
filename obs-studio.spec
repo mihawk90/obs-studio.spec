@@ -19,7 +19,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.0~beta1
+Version:        31.0.0~beta2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -145,7 +145,8 @@ tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 
 %build
 %cmake -DOBS_VERSION_OVERRIDE=%{version_no_tilde} \
-       -DCMAKE_BUILD_TYPE=None \
+       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+       -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DENABLE_AJA=OFF \
        -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
@@ -189,6 +190,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %license cef_license.txt
 %{_bindir}/obs
 %{_bindir}/obs-ffmpeg-mux
+%{_bindir}/obs-nvenc-test
 %{_datadir}/metainfo/com.obsproject.Studio.metainfo.xml
 %{_datadir}/applications/com.obsproject.Studio.desktop
 %{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
@@ -206,9 +208,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_libdir}/cmake/obs-frontend-api/
 %{_libdir}/cmake/obs-websocket-api/
 %{_libdir}/pkgconfig/libobs.pc
+%{_libdir}/pkgconfig/obs-frontend-api.pc
 %{_includedir}/obs/
 
 %changelog
+* Tue Oct 29 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta2-1
+- Update to 31.0.0~beta2
+- change releasetype to something proper
+- add missing files to packages
+- disable warnings as errors to fix compilation
+
 * Sat Oct 05 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta1-1
 - Update to 31.0.0~beta1
 - removed and modified unused/changed build flags
