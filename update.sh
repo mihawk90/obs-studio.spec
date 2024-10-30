@@ -12,11 +12,13 @@ git submodule update --init --recursive
 git submodule status
 popd
 
+sed "s/###VERSION###/$obsVer/g" tag_template > tag_msg
+
 obsVer=$(echo "$obsVer" | sed "s/-/~/")
 # bumpspec writes both the Version and Changelog automatically
 rpmdev-bumpspec -n $obsVer -c "Update to $obsVer" $spec
 # bumpspec always resets to 1 for -n, but we still want to use 11
-sed --in-place "s/Release:.*/Release:        11%{?dist}/" $spec
+sed --in-place "s/Release:.*/Release:        11%{?dist}/; s/$obsVer-1$/$obsVer-11/" $spec
 
 if [ "$1" == "cef" ]; then
 	sed --in-place "s/%global version_cef .*/%global version_cef $2/" $spec

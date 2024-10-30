@@ -1,0 +1,14 @@
+OBS Studio ###VERSION###
+
+Changes in OBS
+==============
+
+For Upstream Release Notes check here:
+https://github.com/obsproject/obs-studio/releases/tag/###VERSION###
+
+Changes in the RPM
+==================
+
+* 
+
+It is also available on the [PackageCloud-Repo](https://packagecloud.io/tarulia/obs-studio).
