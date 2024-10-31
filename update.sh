@@ -12,7 +12,7 @@ git submodule update --init --recursive
 git submodule status
 popd
 
-sed "s/###VERSION###/$obsVer/g" tag_template > tag_msg
+sed "s/###VERSION###/$obsVer/g" tag-template > tag-msg
 
 obsVer=$(echo "$obsVer" | sed "s/-/~/")
 # bumpspec writes both the Version and Changelog automatically

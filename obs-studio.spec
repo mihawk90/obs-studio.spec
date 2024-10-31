@@ -212,13 +212,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
-* Tue Oct 29 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta2-1
+* Tue Oct 29 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta2-11
 - Update to 31.0.0~beta2
 - change releasetype to something proper
 - add missing files to packages
 - disable warnings as errors to fix compilation
 
-* Sat Oct 05 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta1-1
+* Sat Oct 05 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta1-11
 - Update to 31.0.0~beta1
 - removed and modified unused/changed build flags
 - added new build flags for default-disabled features
