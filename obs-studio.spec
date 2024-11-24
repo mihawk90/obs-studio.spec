@@ -19,7 +19,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.0~beta2
+Version:        31.0.0~rc1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -31,7 +31,7 @@ Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aj
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
-BuildRequires:  ninja-build
+#BuildRequires:  ninja-build
 BuildRequires:  libappstream-glib
 
 BuildRequires:  alsa-lib-devel
@@ -212,6 +212,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Nov 24 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~rc1-11
+- Update to 31.0.0~rc1
+- remove ninja-build dependency only used for AJA
+
 * Tue Oct 29 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~beta2-11
 - Update to 31.0.0~beta2
 - change releasetype to something proper
