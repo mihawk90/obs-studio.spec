@@ -2,6 +2,13 @@
 # bytecompile with Python 3
 %global __python %{__python3}
 
+# Disable debug subpackages because we don't upload them anyway
+%bcond debug 0
+
+%if %{without debug}
+%global debug_package %{nil}
+%endif
+
 %if 0%{?fedora} > 39
 %bcond webrtc 1
 %else
@@ -9,7 +16,7 @@
 %endif
 
 %global version_cef 6533
-%global version_aja v16.2-bugfix5
+#global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
 # LuaJIT is not available for POWER
@@ -19,7 +26,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.0~rc1
+Version:        31.0.0
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -27,7 +34,7 @@ License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64.tar.xz
-Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/%{version_aja}.tar.gz
+# Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -132,10 +139,15 @@ Header files for Open Broadcaster Software
 # unpack CEF wrapper
 mkdir -p %{_builddir}/SOURCES/CEF
 tar -x --xz -f %{SOURCE3} -C %{_builddir}/SOURCES/CEF --strip-components=1
+# CEF related files make the package humongous (libcef.so alone is ~2GB)
+# we don't build/publish debug packages, so we can strip them
+%if %{without debug}
+strip %{_builddir}/SOURCES/CEF/Release/{*.so*,chrome-sandbox}
+%endif
 
 # unpack AJA Libs
-mkdir -p %{_builddir}/SOURCES/AJA/source/cmake-build
-tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
+# mkdir -p %{_builddir}/SOURCES/AJA/source/cmake-build
+# tar -xf %{SOURCE4} -C %{_builddir}/SOURCES/AJA/source --strip-components=1
 # compile AJA libs
 # cd %{_builddir}/SOURCES/AJA/source/cmake-build
 # cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_INSTALL_PREFIX=%{_builddir}/SOURCES/AJA/install ..
@@ -212,6 +224,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Dec 07 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0-11
+- Update to 31.0.0
+- new conditional for debug builds, disables subpackages and strips CEF files
+- comment out some remains of the disabled AJA build
+
 * Sun Nov 24 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0~rc1-11
 - Update to 31.0.0~rc1
 - remove ninja-build dependency only used for AJA
