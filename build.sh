@@ -54,13 +54,13 @@ spectool -g $spec --directory ./f_downloads
 rm -rf ./f_upload/$frel/
 mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/
 
-pushd ./f_upload/$frel
-sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.sha512
-
+pushd ./f_upload/$frel && \
+sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm obs-studio-devel-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.sha512 && \
+\
 if [ "$1" == "install" ]; then
 	sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
-fi
-
+fi && \
+\
 popd
 
 set +x
