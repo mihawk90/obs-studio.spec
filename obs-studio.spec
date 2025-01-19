@@ -26,7 +26,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.3
+Version:        31.0.3^1.11541_TEB
 Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -35,7 +35,8 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64.tar.xz
 # Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
-Patch1:         fix-json11-build.patch
+Patch1:         11541_TEB_Linux.patch
+Patch2:         fix-json11-build.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
