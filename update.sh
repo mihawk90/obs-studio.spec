@@ -28,3 +28,4 @@ fi
 git add $spec
 git diff --staged
 
+vi tag-msg
