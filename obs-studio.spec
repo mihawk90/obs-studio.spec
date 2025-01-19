@@ -26,7 +26,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.0
+Version:        31.0.1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -224,6 +224,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Jan 19 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.1-11
+- Update to 31.0.1
+
 * Sat Dec 07 2024 Tarulia <mihawk.90+git@googlemail.com> - 31.0.0-11
 - Update to 31.0.0
 - new conditional for debug builds, disables subpackages and strips CEF files
