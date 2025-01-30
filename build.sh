@@ -59,8 +59,8 @@ sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.
 \
 if [ "$1" == "install" ]; then
 	sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-libs-$mver-$rver.fc$frel.x86_64.rpm
-fi && \
-\
+fi 
+
 popd
 
 set +x
