@@ -29,3 +29,8 @@ git add $spec
 git diff --staged
 
 vi tag-msg
+echo '=== TODO ==='
+echo 'git commit -F commit-msg'
+echo "git tag v${obsVer}-11 -F tag-msg"
+echo 'git push --tags'
+echo 'git push'
