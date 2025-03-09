@@ -15,7 +15,7 @@
 %bcond webrtc 0
 %endif
 
-%global version_cef 6533
+%global version_cef 6533v3
 #global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
@@ -27,7 +27,7 @@
 
 Name:           obs-studio
 Version:        31.0.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -224,6 +224,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Mar 09 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.2-12
+- Rebuild with new CEF
+
 * Sat Mar 08 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.2-11
 - Update to 31.0.2
 
