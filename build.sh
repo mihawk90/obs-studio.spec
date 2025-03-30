@@ -3,21 +3,21 @@
 ### preparation
 
 spec=./obs-studio.spec
-
-if [ "$1" == "frel" ] && [ "$2" != "" ]; then
-	frel=$2
-	echo "Fedora Release version specified. Using $frel."
-else
-	frel=$(rpm -E %fedora)
-	echo "No Fedora Release version specified. Using default $frel."
-fi;
+frel=$(rpm -E %fedora)
 
 if [ "$1" == "all" ]; then
-	echo "Building for Fedora Release $(($frel - 1)), $frel, and $(($frel + 1))."
+	echo "Building for Fedora Release $(($frel - 1)), ${frel}, and $(($frel + 1))."
 	./build.sh frel $(($frel - 1))
 	./build.sh frel $(($frel + 1))
 	./build.sh $2
 	exit
+fi;
+
+if [ "$1" == "frel" ] && [ "$2" != "" ]; then
+	frel=$2
+	echo ">>>>>>> Fedora ${frel} starting."
+else
+	echo ">>>>>>> Fedora ${frel} starting - defaulted."
 fi;
 
 # delimited by spaces, every space is a new "field" for cut, hence field 9 for the version/release
@@ -79,5 +79,5 @@ sed --in-place "s/-DYOUTUBE_CLIENTID_HASH='.*'/-DYOUTUBE_CLIENTID_HASH=''/" $spe
 sed --in-place "s/-DYOUTUBE_SECRET='.*'/-DYOUTUBE_SECRET=''/" $spec
 sed --in-place "s/-DYOUTUBE_SECRET_HASH='.*'/-DYOUTUBE_SECRET_HASH=''/" $spec
 
-echo "All done!"
+echo "<<<<<<< Fedora ${frel} done."
 
