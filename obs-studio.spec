@@ -26,8 +26,8 @@
 %endif
 
 Name:           obs-studio
-Version:        31.0.2
-Release:        12%{?dist}
+Version:        31.0.3
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -35,6 +35,7 @@ URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64.tar.xz
 # Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
+Patch1:         fix-json11-build.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0
@@ -71,7 +72,12 @@ BuildRequires:  luajit-devel
 %endif
 BuildRequires:  mbedtls-devel
 BuildRequires:  nv-codec-headers
+# oneVPL was renamed to libvpl to match upstream
+%if 0%{?fedora} < 42
 BuildRequires:  oneVPL-devel
+%else
+BuildRequires:  libvpl-devel
+%endif
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
 BuildRequires:  pipewire-jack-audio-connection-kit-devel
@@ -224,6 +230,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Mar 30 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.3-11
+- Update to 31.0.3
+- Add renamed VPL package for F42+
+- Add patch to fix json11 compile error on GCC 15+
+
 * Sun Mar 09 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.2-12
 - Rebuild with new CEF
 
