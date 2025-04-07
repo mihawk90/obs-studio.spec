@@ -1,0 +1,22 @@
+[tarulia_obs-studio]
+name=OBS Studio by Tarulia
+baseurl=https://packagecloud.io/tarulia/obs-studio/fedora/$releasever/$basearch
+repo_gpgcheck=0
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/tarulia/obs-studio/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=7d
+
+[tarulia_obs-studio-pre]
+name=OBS Studio Prereleases by Tarulia
+baseurl=https://packagecloud.io/tarulia/obs-studio-pre/fedora/$releasever/$basearch
+repo_gpgcheck=0
+gpgcheck=0
+enabled=0
+gpgkey=https://packagecloud.io/tarulia/obs-studio-pre/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=7d
+
