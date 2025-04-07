@@ -97,7 +97,6 @@ BuildRequires:  wayland-devel
 BuildRequires:  websocketpp-devel
 BuildRequires:  x264-devel
 
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       ffmpeg
 Requires:       x264
 
@@ -116,20 +115,18 @@ Conflicts:     obs-studio-plugin-vlc-video
 # This is also already part of this package
 Conflicts:     obs-studio-plugin-browser
 
+# Conflict with -libs subpackage in Fedora repos to prevent parallel installs
+Conflicts:       %{name}-libs
+# Obsolete already installed -libs subpackage
+Obsoletes:       %{name}-libs <= %{version}
+
 %description
 Open Broadcaster Software is free and open source
 software for video recording and live streaming.
 
-%package libs
-Summary: Open Broadcaster Software Studio libraries
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
-
-%description libs
-Library files for Open Broadcaster Software
 
 %package devel
 Summary: Open Broadcaster Software Studio header files
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description devel
 Header files for Open Broadcaster Software
@@ -212,8 +209,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_datadir}/applications/com.obsproject.Studio.desktop
 %{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
 %{_datadir}/obs/
-
-%files libs
 %{_libdir}/obs-plugins/
 %{_libdir}/obs-scripting/
 # unversioned so files packaged for third-party plugins (cf. rfbz#5999)
