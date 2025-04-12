@@ -1,5 +1,5 @@
 [tarulia_obs-studio]
-name=OBS Studio by Tarulia
+name=Packagecloud repo for OBS Studio owned by Tarulia
 baseurl=https://packagecloud.io/tarulia/obs-studio/fedora/$releasever/$basearch
 repo_gpgcheck=0
 gpgcheck=0
@@ -10,7 +10,7 @@ sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 metadata_expire=7d
 
 [tarulia_obs-studio-pre]
-name=OBS Studio Prereleases by Tarulia
+name=Packagecloud repo for OBS Studio Preleases owned by Tarulia
 baseurl=https://packagecloud.io/tarulia/obs-studio-pre/fedora/$releasever/$basearch
 repo_gpgcheck=0
 gpgcheck=0
