@@ -27,7 +27,7 @@
 
 Name:           obs-studio
 Version:        31.0.3
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -230,6 +230,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun May 11 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.3-12
+- Rebuilt for new mbedtls
+
 * Sun Mar 30 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.0.3-11
 - Update to 31.0.3
 - Add renamed VPL package for F42+
