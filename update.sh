@@ -33,4 +33,5 @@ echo '=== TODO ==='
 echo 'git commit -F commit-msg'
 echo "git tag v${obsVer}-11 -F tag-msg"
 echo 'git push --tags'
+echo 'dolphin f_upload'
 echo 'git push'
