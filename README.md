@@ -1,15 +1,18 @@
 # What?
+
 A Spec file for building an RPM package of [OBS Studio](https://obsproject.com) on Fedora. This could be adapted to build on RHEL and derivatives as well, but has not been tested. SUSE likewise has also not been tested.
 
-I also provide precompiled packages on the [release page](https://github.com/mihawk90/obs-studio.spec/releases).
+I also provide precompiled packages on the [release page](https://github.com/mihawk90/obs-studio.spec/releases) and via a PackageCloud Repository.
 
 # Why?
+
 Due to packaging constraints the RPM Fusion package up until Fedora 35 and the Fedora package since then were/are missing some components, most notably [obs-browser](https://github.com/obsproject/obs-browser) - which is used for Browser Sources, Custom Browser Docks, as well as service integrations (Twitch login). So I set out to build my own package to get as close to the official Ubuntu PPA as possible.
 
 Note: Currently I don't build the AJA module because I don't have one of these cards and it was a bit of a PITA to build everytime. If anyone has need, please open an issue and I'll see to get it back in.
 
 # Installation
-> [!IMPORTANT]  
+
+> [!IMPORTANT]
 > This package requires RPM Fusion to be enabled on your system. Check [their guide](https://rpmfusion.org/Configuration) on how to enable it.
 
 ## PackageCloud Repository
@@ -24,7 +27,7 @@ $ dnf install obs-studio
 $ dnf update obs-studio
 ```
 
-The `.repo` file also contains a repository for pre-release (Beta/RC) versions, disbled by default. You can enable it permanently or per transaction:
+The `.repo` file also contains a repository for pre-release (Beta/RC) versions, disabled by default. You can enable it permanently or per transaction:
 ```sh
 # permanent
 $ dnf config-manager setopt tarulia_obs-studio-pre.enabled=1
@@ -33,18 +36,20 @@ $ dnf <install/update> obs-studio --enable-repo=tarulia_obs-studio-pre
 ```
 
 ## Manual
+
 1. Go to the [release page](https://github.com/mihawk90/obs-studio.spec/releases)
-2. On the Release under Assets (might need to click "Show all XX assets") download `obs-studio-<version>-11.fc<fedora-release>.x86_64.rpm`, `obs-studio-libs-<version>-11.fc<fedora-release>.x86_64.rpm`, and (optionally) `obs-studio-<version>-11.fc<fedora-release>.sha512`
+2. On the Release under Assets (might need to click "Show all XX assets") download `obs-studio-<version>-11.fc<fedora-release>.x86_64.rpm`, and (optionally) `obs-studio-<version>-11.fc<fedora-release>.sha512`
 3. In a terminal:
     ```sh
     $ cd <whereever you put the download>
     # optional:
     $ sha512sum -c obs-studio-<version>-11.fc<fedora-release>.sha512
     # if it comes back OK (you can ignore FAILED on the -devel file if you didn't download it)
-    $ dnf install ./obs-studio-<version>-11.fc<fedora-release>.x86_64.rpm ./obs-studio-libs-<version>-11.fc<fedora-release>.x86_64.rpm`
+    $ dnf install ./obs-studio-<version>-11.fc<fedora-release>.x86_64.rpm
     ```
 
 # Disclaimer
+
 This repository and OBS build is not related to or endorsed by the OBS Project. I do this in my free time for my own use.
 
 # Thanks
