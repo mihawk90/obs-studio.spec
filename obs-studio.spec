@@ -26,7 +26,7 @@
 %endif
 
 Name:           obs-studio
-Version:        31.1.2
+Version:        32.0.0~beta1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -87,6 +87,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  rnnoise-devel
+BuildRequires:  simde-devel
 BuildRequires:  speexdsp-devel
 BuildRequires:  srt-devel
 BuildRequires:  swig
@@ -224,6 +225,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Fri Aug 29 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.0~beta1-11
+- Update to 32.0.0~beta1
+- Add simde-devel
+
 * Sun Jul 27 2025 Tarulia <mihawk.90+git@googlemail.com> - 31.1.2-11
 - Update to 31.1.2
 - Update CEF build
