@@ -16,7 +16,7 @@ Occasionally I may include patches from upstream PRs. If you happen to be using 
 
 Current included patches:
 
-* none
+* [obs-ffmpeg: Add ROI support for VAAPI obsproject/obs-studio#10136](https://github.com/obsproject/obs-studio/pull/10136)
 
 If you would like a PR to be included for testing or actual usage, please open an issue or ping me in `#linux-support` on the OBS Discord.
 
