@@ -51,8 +51,9 @@ set -x
 rm ./f_downloads/obs-studio-*.tar.gz
 tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
 spectool -g $spec --directory ./f_downloads
+cp *.patch ./f_downloads
 rm -rf ./f_upload/$frel/
-mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/
+mock -r fedora-$frel-x86_64-rpmfusion_free --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/ --rootdir=$(pwd)/mock_root/
 
 pushd ./f_upload/$frel && \
 sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-devel-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.sha512 && \
