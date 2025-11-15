@@ -29,7 +29,7 @@
 
 Name:           obs-studio
 Version:        32.0.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -39,6 +39,7 @@ Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version
 # Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
 
 Patch0:         10136.patch
+Patch1:         12701.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0 extra-cmake-modules
@@ -230,6 +231,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Nov 15 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.1-13
+- Add PR#12701
+
 * Mon Oct 6 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.1-12
 - Add PR#10136
 
