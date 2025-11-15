@@ -28,8 +28,8 @@
 %endif
 
 Name:           obs-studio
-Version:        32.0.1
-Release:        13%{?dist}
+Version:        32.0.2
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -38,8 +38,14 @@ Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{na
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64%{version_cef_v}.tar.xz
 # Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
 
-Patch0:         10136.patch
-Patch1:         12701.patch
+%if 0%{?fedora} > 42
+Patch0:         obs-studio-fix-build-against-qt-6-10.patch
+%endif
+
+# Feature patches
+Patch100:       10136.patch
+Patch101:       12701.patch
+
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0 extra-cmake-modules
@@ -231,6 +237,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Nov 15 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.2-11
+- Update to 32.0.2
+- Add patch to fix Qt6 GuiPrivate linking errors
+
 * Sat Nov 15 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.1-13
 - Add PR#12701
 
