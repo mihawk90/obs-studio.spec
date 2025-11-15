@@ -10,6 +10,16 @@ Due to packaging constraints the RPM Fusion package up until Fedora 35 and the F
 
 Note: Currently I don't build the AJA module because I don't have one of these cards and it was a bit of a PITA to build everytime. If anyone has need, please open an issue and I'll see to get it back in.
 
+## Patches
+
+Occasionally I may include patches from upstream PRs. If you happen to be using or testing the patched changes, please provide any feedback on the corresponding PR.
+
+Current included patches:
+
+* none
+
+If you would like a PR to be included for testing or actual usage, please open an issue or ping me in `#linux-support` on the OBS Discord.
+
 # Installation
 
 > [!IMPORTANT]
