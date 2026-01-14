@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        32.0.4
+Version:        32.1.0~beta1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -44,7 +44,6 @@ Patch0:         obs-studio-fix-build-against-qt-6-10.patch
 
 # Feature patches
 Patch100:       10136.patch
-Patch101:       12701.patch
 
 
 BuildRequires:  gcc
@@ -237,6 +236,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Wed Jan 14 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0~beta1-11
+- Update to 32.1.0~beta1
+- Remove PR#12701 patch after upstream merge
+
 * Sun Dec 14 2025 Tarulia <mihawk.90+git@googlemail.com> - 32.0.4-11
 - Update to 32.0.4
 
