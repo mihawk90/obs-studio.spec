@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 spec=./obs-studio.spec
 
@@ -15,7 +15,7 @@ popd
 sed "s/###VERSION###/$obsVer/g" tag-template > tag-msg
 sed "s/###VERSION###/$obsVer/g" commit-template > commit-msg
 
-obsVer=$(echo "$obsVer" | sed "s/-/~/")
+obsVer=${obsVer/-/\~}
 # bumpspec writes both the Version and Changelog automatically
 rpmdev-bumpspec -n $obsVer -c "Update to $obsVer" $spec
 # bumpspec always resets to 1 for -n, but we still want to use 11
@@ -31,7 +31,8 @@ git diff --staged
 vi tag-msg
 echo '=== TODO ==='
 echo 'git commit -F commit-msg'
-echo "git tag v${obsVer}-11 -F tag-msg"
+echo "git tag v${obsVer/\~/-}-11 -F tag-msg"
 echo 'git push --tags'
+echo "xdg-open 'https://github.com/mihawk90/obs-studio.spec/tags'"
 echo 'dolphin f_upload'
 echo 'git push'
