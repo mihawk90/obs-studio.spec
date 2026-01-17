@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        32.1.0~beta1
+Version:        32.1.0~beta2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -236,6 +236,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Jan 17 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0~beta2-11
+- Update to 32.1.0~beta2
+
+* Sat Jan 17 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0~beta1-11
+- Update to 32.1.0~beta1
+
 * Wed Jan 14 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0~beta1-11
 - Update to 32.1.0~beta1
 - Remove PR#12701 patch after upstream merge
