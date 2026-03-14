@@ -35,7 +35,12 @@ Summary:        Open Broadcaster Software Studio
 License:        GPLv2+
 URL:            https://obsproject.com/
 Source0:        https://github.com/obsproject/obs-studio/archive/%{version}/%{name}-%{version}.tar.gz
+%ifarch %{x86_64}
 Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_x86_64%{version_cef_v}.tar.xz
+%endif
+%ifarch %{arm64}
+Source3:        https://cdn-fastly.obsproject.com/downloads/cef_binary_%{version_cef}_linux_aarch64%{version_cef_v}.tar.xz
+%endif
 # Source4:        https://github.com/aja-video/ntv2/archive/refs/tags/#{version_aja}.tar.gz
 
 %if 0%{?fedora} > 42
@@ -81,11 +86,13 @@ BuildRequires:  luajit-devel
 %endif
 BuildRequires:  mbedtls-devel
 BuildRequires:  nv-codec-headers
-# oneVPL was renamed to libvpl to match upstream
+# oneVPL was renamed to libvpl to match upstream and is only available on x86_64
+%ifarch %{x86_64}
 %if 0%{?fedora} < 42
 BuildRequires:  oneVPL-devel
 %else
 BuildRequires:  libvpl-devel
+%endif
 %endif
 BuildRequires:  pciutils-devel
 BuildRequires:  pipewire-devel
@@ -175,7 +182,6 @@ strip %{_builddir}/SOURCES/CEF/Release/{*.so*,chrome-sandbox}
        -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
        -DCMAKE_PREFIX_PATH="%{_builddir}/SOURCES/AJA/install" \
        -DENABLE_AJA=OFF \
-       -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DENABLE_JACK=ON \
        -DENABLE_LIBFDK=ON \
 %if ! %{with lua_scripting}
@@ -184,6 +190,7 @@ strip %{_builddir}/SOURCES/CEF/Release/{*.so*,chrome-sandbox}
 %if ! %{with webrtc}
        -DENABLE_WEBRTC=OFF \
 %endif
+       -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="%{_builddir}/SOURCES/CEF" \
        -DTWITCH_CLIENTID='' \
        -DTWITCH_HASH='' \
        -DRESTREAM_CLIENTID='' \
@@ -216,7 +223,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %license cef_license.txt
 %{_bindir}/obs
 %{_bindir}/obs-ffmpeg-mux
+%ifarch %{x86_64}
 %{_bindir}/obs-nvenc-test
+%endif
 %{_datadir}/metainfo/com.obsproject.Studio.metainfo.xml
 %{_datadir}/applications/com.obsproject.Studio.desktop
 %{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
@@ -236,6 +245,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Mar 15 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0-12
+- Experimental aarch64 support
+  - exclude libvpl-devel BuildRequires (x64 exclusive lib)
+  - exclude obs-nvenc-test from files (x64 exclusive build)
+
 * Thu Mar 12 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.0-11
 - Update to 32.1.0
 

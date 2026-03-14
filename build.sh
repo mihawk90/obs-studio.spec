@@ -1,12 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 ### preparation
 
 spec=./obs-studio.spec
 frel=$(rpm -E %fedora)
 
+arch="x86_64"
+if [[ "$0" == *"build-arm"* ]]; then
+	arch="aarch64"
+fi;
+
 if [ "$1" == "all" ]; then
-	echo "Building for Fedora Release $(($frel - 1)), ${frel}, and $(($frel + 1))."
+	echo "Building for Fedora Release $(($frel - 1)), ${frel}, and $(($frel + 1)) on ${arch}."
 	./build.sh frel $(($frel - 1))
 	./build.sh frel $(($frel + 1))
 	./build.sh $2
@@ -15,9 +20,9 @@ fi;
 
 if [ "$1" == "frel" ] && [ "$2" != "" ]; then
 	frel=$2
-	echo ">>>>>>> Fedora ${frel} starting."
+	echo ">>>>>>> Fedora ${frel}-${arch} starting."
 else
-	echo ">>>>>>> Fedora ${frel} starting - defaulted."
+	echo ">>>>>>> Fedora ${frel}-${arch} starting - defaulted."
 fi;
 
 # delimited by spaces, every space is a new "field" for cut, hence field 9 for the version/release
@@ -50,16 +55,16 @@ set -x
 ### build phase
 rm ./f_downloads/obs-studio-*.tar.gz
 tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
-spectool -g $spec --directory ./f_downloads
+spectool -g $spec --directory ./f_downloads --define "_target_cpu $arch"
 cp *.patch ./f_downloads
-rm -rf ./f_upload/$frel/
-mock -r fedora+rpmfusion_nonfree-$frel-x86_64 --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/ --rootdir=$(pwd)/mock_root/
+rm -rf ./f_upload/$frel/$arch/
+mock -r fedora+rpmfusion_nonfree-$frel-$arch --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/$arch/ --rootdir=$(pwd)/mock_root/
 
-pushd ./f_upload/$frel && \
-sha512sum obs-studio-$mver-$rver.fc$frel.x86_64.rpm obs-studio-devel-$mver-$rver.fc$frel.x86_64.rpm > obs-studio-$mver-$rver.fc$frel.sha512 && \
+pushd ./f_upload/$frel/$arch && \
+sha512sum obs-studio-$mver-$rver.fc$frel.$arch.rpm obs-studio-devel-$mver-$rver.fc$frel.$arch.rpm > obs-studio-$mver-$rver.fc$frel.sha512 && \
 \
 if [ "$1" == "install" ]; then
-	sudo dnf install obs-studio-$mver-$rver.fc$frel.x86_64.rpm
+	sudo dnf install obs-studio-$mver-$rver.fc$frel.$arch.rpm
 fi
 
 popd
@@ -80,5 +85,4 @@ sed --in-place "s/-DYOUTUBE_CLIENTID_HASH='.*'/-DYOUTUBE_CLIENTID_HASH=''/" $spe
 sed --in-place "s/-DYOUTUBE_SECRET='.*'/-DYOUTUBE_SECRET=''/" $spec
 sed --in-place "s/-DYOUTUBE_SECRET_HASH='.*'/-DYOUTUBE_SECRET_HASH=''/" $spec
 
-echo "<<<<<<< Fedora ${frel} done."
-
+echo "<<<<<<< Fedora ${frel}-${arch} done."
