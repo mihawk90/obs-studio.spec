@@ -29,7 +29,7 @@
 
 Name:           obs-studio
 Version:        32.1.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -127,11 +127,14 @@ Requires:      %{cef_runtime_deps}
 # The RPM Fusion obs-studio-freeworld package specifies these as Supplements
 # However since we already package the same, they conflict with this package
 Conflicts:     obs-studio-plugin-x264
+Obsoletes:     obs-studio-plugin-x264 <= %{version}
 Conflicts:     obs-studio-plugin-vlc-video
+Obsoletes:     obs-studio-plugin-vlc-video <= %{version}
 
 # Fedora > 40 ships obs-studio-plugin-browser as a Supplements weak dep
 # This is also already part of this package
 Conflicts:     obs-studio-plugin-browser
+Obsoletes:     obs-studio-plugin-browser <= %{version}
 
 # Conflict with -libs subpackage in Fedora repos to prevent parallel installs
 Conflicts:       %{name}-libs
@@ -245,6 +248,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sun Apr 12 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.1-12
+- Add Obsoletes for conflicting plugin packages GH#12
+
 * Sat Apr 04 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.1-11
 - Update to 32.1.1
 
