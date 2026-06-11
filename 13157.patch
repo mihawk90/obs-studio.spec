@@ -1,0 +1,57 @@
+From 4ed9954888950390c2d01dd05b6b7abefb9bba62 Mon Sep 17 00:00:00 2001
+From: Ava Chaney <hello@ava.dev>
+Date: Sun, 22 Feb 2026 20:46:57 -0800
+Subject: [PATCH] linux-pipewire: Defer screencast portal init until source is
+ shown
+
+The previous behaviour would attempt screencast portal initialization
+even when the source is not shown, which can cause a flood of pop-ups,
+each indistinguishable from each other, on startup.
+
+This commit defers portal init until the first time the source is
+shown, so the user isn't flooded with pop-ups when starting OBS.
+---
+ plugins/linux-pipewire/screencast-portal.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/plugins/linux-pipewire/screencast-portal.c b/plugins/linux-pipewire/screencast-portal.c
+index d5fe531c218351..577a3c91fe6088 100644
+--- a/plugins/linux-pipewire/screencast-portal.c
++++ b/plugins/linux-pipewire/screencast-portal.c
+@@ -519,8 +519,6 @@ static void *screencast_portal_desktop_capture_create(obs_data_t *settings, obs_
+ 	capture->restore_token = bstrdup(obs_data_get_string(settings, "RestoreToken"));
+ 	capture->source = source;
+ 
+-	init_screencast_capture(capture);
+-
+ 	return capture;
+ }
+ static void *screencast_portal_window_capture_create(obs_data_t *settings, obs_source_t *source)
+@@ -533,8 +531,6 @@ static void *screencast_portal_window_capture_create(obs_data_t *settings, obs_s
+ 	capture->restore_token = bstrdup(obs_data_get_string(settings, "RestoreToken"));
+ 	capture->source = source;
+ 
+-	init_screencast_capture(capture);
+-
+ 	return capture;
+ }
+ 
+@@ -548,8 +544,6 @@ static void *screencast_portal_capture_create(obs_data_t *settings, obs_source_t
+ 	capture->restore_token = bstrdup(obs_data_get_string(settings, "RestoreToken"));
+ 	capture->source = source;
+ 
+-	init_screencast_capture(capture);
+-
+ 	return capture;
+ }
+ 
+@@ -631,6 +625,9 @@ static void screencast_portal_capture_show(void *data)
+ {
+ 	struct screencast_portal_capture *capture = data;
+ 
++	if (!capture->obs_pw_stream && !capture->session_handle && !capture->cancellable)
++		init_screencast_capture(capture);
++
+ 	if (capture->obs_pw_stream)
+ 		obs_pipewire_stream_show(capture->obs_pw_stream);
+ }

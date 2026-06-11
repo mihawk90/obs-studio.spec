@@ -29,7 +29,7 @@
 
 Name:           obs-studio
 Version:        32.1.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -49,6 +49,7 @@ Patch0:         obs-studio-fix-build-against-qt-6-10.patch
 
 # Feature patches
 Patch100:       10136.patch
+Patch101:       13157.patch
 
 
 BuildRequires:  gcc
@@ -248,6 +249,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Thu Jun 11 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.2-13
+- Add PR#13157
+
 * Thu May 21 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.2-12
 - rebuilt
 
