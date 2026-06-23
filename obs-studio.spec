@@ -28,8 +28,8 @@
 %endif
 
 Name:           obs-studio
-Version:        32.1.2
-Release:        13%{?dist}
+Version:        32.2.0~beta2
+Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
 License:        GPLv2+
@@ -249,6 +249,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Mon Jun 22 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.0~beta2-11
+- Update to 32.2.0~beta2
+
 * Thu Jun 11 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.1.2-13
 - Add PR#13157
 
