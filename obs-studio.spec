@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        32.2.0~rc2
+Version:        32.2.0
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -51,6 +51,8 @@ Patch0:         obs-studio-fix-build-against-qt-6-10.patch
 Patch100:       10136.patch
 Patch101:       13157.patch
 
+# PipeWire capture bugfix
+Patch1000:      13673.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0 extra-cmake-modules
@@ -249,6 +251,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Tue Jul 21 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.0-11
+- Update to 32.2.0
+- Add PR#13673
+
 * Thu Jul 16 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.0~rc2-11
 - Update to 32.2.0~rc2
 

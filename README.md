@@ -18,6 +18,8 @@ Current included patches:
 
 * [obs-ffmpeg: Add ROI support for VAAPI obsproject/obs-studio#10136](https://github.com/obsproject/obs-studio/pull/10136)
 * [linux-pipewire: Defer screencast portal init until source is shown obsproject/obs-studio#13157](https://github.com/obsproject/obs-studio/pull/13157)
+* [linux-pipewire: Forbid screencast source duplication obsproject/obs-studio#13673](https://github.com/obsproject/obs-studio/pull/13673)
+
 
 If you would like a PR to be included for testing or actual usage, please open an issue or ping me in `#linux-support` on the OBS Discord.
 
