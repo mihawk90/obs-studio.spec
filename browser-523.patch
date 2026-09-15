@@ -1,0 +1,839 @@
+From 28282bca4356e890e3382626deed7ee508e5123f Mon Sep 17 00:00:00 2001
+From: Matt Gajownik <matt@obsproject.com>
+Date: Thu, 1 Aug 2024 23:54:18 +1000
+Subject: [PATCH 1/3] Enable support for CEF 6613+ and Chrome Runtime
+
+Add a dummy Browser Client to introduce limitations into the Chrome UI
+windows that can be opened in uncontrolled edge cases. Chrome UI windows
+are unmanaged by default. By returning something other than null in
+GetDefaultClient() we can lock it down in various ways.
+
+OnBeforePopup, OnOpenURLFromTab can probably be removed as they don't
+get called. There's no direct way to stop the Chrome UI window from
+being opened, so instead close it immediately.
+
+Disable Various Chrome Settings in custom docks & browser sources
+via SetPreferences. For more, check `chrome/common/pref_names.h`.
+
+Chrome's default error display is now used by CEF, so on top of the
+existing override in browser docks, a similar override has been added
+to browser sources which just redirects to about:blank.
+
+Also blocks
+ - Chrome Extensions, as they are largely untested and unpredictable
+ - MediaRouter, which provides Cast.. functionality
+ - CalculateNativeWinOcclusion, which lowers FPS for hidden pages
+ - LiveCaption, which provides automatic captions
+ - DocumentPictureInPictureAPI, which provides PiP widgets (YouTube)
+ - StorageNotificationService, when approaching low cache space
+
+A data migration function is included. It moves some directories into a
+new 'Default' profile subdirectory, and performs the necessary renaming
+of certain files to ensure the new Profile loads.
+Additionally, the cookie directories for each service integration must
+be moved into the root config directory, as subdirectories in their
+current form (obs_profile_cookies/<cookie_id>) are not supported. This
+is intentional, and according to Marshall this was never a supported
+setup. cache_path *must* be a direct child of the root_cache_path.
+Invalid cache_path_ is silently treated as Incognito Mode and cookies
+are not stored.
+---
+ CMakeLists.txt                 |   2 +
+ browser-app.cpp                |  70 +++++++++++++++++++
+ browser-app.hpp                |   7 ++
+ browser-client.cpp             |  11 +++
+ browser-client.hpp             |   4 ++
+ browser-dummy-client.cpp       |  87 ++++++++++++++++++++++++
+ browser-dummy-client.hpp       |  64 ++++++++++++++++++
+ cmake/os-linux.cmake           |   3 +-
+ cmake/os-macos.cmake           |   3 +-
+ cmake/os-windows.cmake         |   4 +-
+ obs-browser-plugin.cpp         | 120 +++++++++++++++++++++++++++++++++
+ panel/browser-panel-client.cpp |  17 ++++-
+ panel/browser-panel-client.hpp |  12 ++++
+ panel/browser-panel.cpp        |  35 +++++++++-
+ 14 files changed, 432 insertions(+), 7 deletions(-)
+ create mode 100644 browser-dummy-client.cpp
+ create mode 100644 browser-dummy-client.hpp
+
+diff --git a/plugins/obs-browser/CMakeLists.txt b/plugins/obs-browser/CMakeLists.txt
+index 0139b4c1c..ba56c5a2d 100644
+--- a/plugins/obs-browser/CMakeLists.txt
++++ b/plugins/obs-browser/CMakeLists.txt
+@@ -25,6 +25,8 @@ target_sources(
+           browser-app.hpp
+           browser-client.cpp
+           browser-client.hpp
++          browser-dummy-client.cpp
++          browser-dummy-client.hpp
+           browser-scheme.cpp
+           browser-scheme.hpp
+           browser-version.h
+diff --git a/plugins/obs-browser/browser-app.cpp b/plugins/obs-browser/browser-app.cpp
+index 5d2c4dc76..3f091973b 100644
+--- a/plugins/obs-browser/browser-app.cpp
++++ b/plugins/obs-browser/browser-app.cpp
+@@ -48,11 +48,62 @@ CefRefPtr<CefBrowserProcessHandler> BrowserApp::GetBrowserProcessHandler()
+ 	return this;
+ }
+ 
++CefRefPtr<CefClient> BrowserApp::GetDefaultClient()
++{
++	return GetDummy();
++}
++
+ void BrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
+ {
+ 	registrar->AddCustomScheme("http", CEF_SCHEME_OPTION_STANDARD | CEF_SCHEME_OPTION_CORS_ENABLED);
+ }
+ 
++void BrowserApp::OnContextInitialized()
++{
++	// Without a default client, CefBrowser is unmanaged, allowing full-blown Chromium windows outside of our control.
++	// We don't actually want those, so define a dummy client which will automatically close any such windows.
++	dummy = new BrowserDummyClient();
++
++	CefRefPtr<CefRequestContext> requestContext = CefRequestContext::GetGlobalContext();
++	CefString errorMessage;
++	CefRefPtr<CefValue> optionValue = CefValue::Create();
++
++	constexpr std::array<std::string_view, 20> kBrowserFeaturesToDisable{
++		"autofill.credit_card_enabled",
++		"autofill.enabled",
++		"autofill.iban_enabled",
++		"autofill.payment_card_benefits",
++		"autofill.payment_cvc_storage",
++		"autofill.profile_enabled",
++		"autologin.enabled",
++		"browser_labs_enabled",
++		"credentials_enable_autosignin",
++		"credentials_enable_service",
++		"payments.can_make_payment_enabled",
++		"printing.enabled",
++		"search.suggest_enabled",
++		"shopping_list_enabled",
++		"side_panel.google_search_side_panel_enabled",
++		"side_search.enabled",
++		"signin.allowed",
++		"signin.allowed_on_next_startup",
++		"translate",
++		"url_keyed_anonymized_data_collection.enabled"};
++
++	constexpr std::array<std::string_view, 2> kBrowserFeaturesToEnable{"extensions.block_external_extensions",
++									   "extensions.disabled"};
++
++	optionValue->SetBool(false);
++	for (std::string_view feature : kBrowserFeaturesToDisable) {
++		requestContext->SetPreference(feature.data(), optionValue.get(), errorMessage);
++	}
++
++	optionValue->SetBool(true);
++	for (std::string_view feature : kBrowserFeaturesToEnable) {
++		requestContext->SetPreference(feature.data(), optionValue.get(), errorMessage);
++	}
++}
++
+ void BrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line)
+ {
+ #ifdef _WIN32
+@@ -82,16 +133,35 @@ void BrowserApp::OnBeforeCommandLineProcessing(const CefString &, CefRefPtr<CefC
+ 		disableFeatures += ",EnableWindowsGamingInputDataFetcher";
+ #endif
+ 		disableFeatures += ",WebBluetooth";
++		disableFeatures += ",MediaRouter";
++		disableFeatures += ",CalculateNativeWinOcclusion";
++		disableFeatures += ",LiveCaption";
++		// https://github.com/chromiumembedded/cef/issues/3966
++		disableFeatures += ",StorageNotificationService";
+ 		command_line->AppendSwitchWithValue("disable-features", disableFeatures);
+ 	} else {
+ 		command_line->AppendSwitchWithValue("disable-features", "WebBluetooth,"
+ #ifdef _WIN32
+ 									"EnableWindowsGamingInputDataFetcher,"
+ #endif
++									"MediaRouter,"
++									"CalculateNativeWinOcclusion,"
++									"LiveCaption,"
++									"StorageNotificationService,"
+ 									"HardwareMediaKeyHandling");
+ 	}
+ 
++	if (command_line->HasSwitch("disable-blink-features")) {
++		std::string disableBlinkFeatures = command_line->GetSwitchValue("disable-blink-features");
++		disableBlinkFeatures += ",DocumentPictureInPictureAPI";
++		command_line->AppendSwitchWithValue("disable-blink-features", disableBlinkFeatures);
++	} else {
++		command_line->AppendSwitchWithValue("disable-blink-features", "DocumentPictureInPictureAPI");
++	}
++
+ 	command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
++	command_line->AppendSwitch("disable-extensions");
++	command_line->AppendSwitch("hide-crash-restore-bubble");
+ #ifdef __APPLE__
+ 	command_line->AppendSwitch("use-mock-keychain");
+ #elif !defined(_WIN32)
+diff --git a/plugins/obs-browser/browser-app.hpp b/plugins/obs-browser/browser-app.hpp
+index b25d9accd..0694d0c8e 100644
+--- a/plugins/obs-browser/browser-app.hpp
++++ b/plugins/obs-browser/browser-app.hpp
+@@ -22,6 +22,7 @@
+ #include <unordered_map>
+ #include <functional>
+ #include "cef-headers.hpp"
++#include "browser-dummy-client.hpp"
+ 
+ typedef std::function<void(CefRefPtr<CefBrowser>)> BrowserFunc;
+ 
+@@ -85,6 +86,8 @@ class BrowserApp : public CefApp, public CefRenderProcessHandler, public CefBrow
+ 
+ 	virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
+ 	virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
++	virtual CefRefPtr<CefClient> GetDefaultClient() override;
++	virtual void OnContextInitialized() override;
+ 	virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
+ 	virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
+ 	virtual void OnBeforeCommandLineProcessing(const CefString &process_type,
+@@ -106,5 +109,9 @@ class BrowserApp : public CefApp, public CefRenderProcessHandler, public CefBrow
+ 	QTimer frameTimer;
+ #endif
+ 
++	CefRefPtr<BrowserDummyClient> dummy = nullptr;
++
++	BrowserDummyClient *GetDummy() const { return dummy.get(); };
++
+ 	IMPLEMENT_REFCOUNTING(BrowserApp);
+ };
+diff --git a/plugins/obs-browser/browser-client.cpp b/plugins/obs-browser/browser-client.cpp
+index bf7baada9..1083793a1 100644
+--- a/plugins/obs-browser/browser-client.cpp
++++ b/plugins/obs-browser/browser-client.cpp
+@@ -626,6 +626,17 @@ void BrowserClient::OnLoadEnd(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame> frame,
+ 	}
+ }
+ 
++void BrowserClient::OnLoadError(CefRefPtr<CefBrowser>, [[maybe_unused]] CefRefPtr<CefFrame> frame,
++				CefLoadHandler::ErrorCode, const CefString &, const CefString &)
++{
++#if CHROME_VERSION_BUILD > 6533
++	// CEF doesn't currently provide a way to properly disable/override the default Chrome error page.
++	// https://github.com/obsproject/obs-studio/issues/13499
++	// FIXME: https://github.com/chromiumembedded/cef/issues/3852
++	frame->LoadURL("about:blank");
++#endif
++}
++
+ bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser>, cef_log_severity_t level, const CefString &message,
+ 				     const CefString &source, int line)
+ {
+diff --git a/plugins/obs-browser/browser-client.hpp b/plugins/obs-browser/browser-client.hpp
+index cba0be2dd..069c3ff42 100644
+--- a/plugins/obs-browser/browser-client.hpp
++++ b/plugins/obs-browser/browser-client.hpp
+@@ -146,5 +146,9 @@ class BrowserClient : public CefClient,
+ 	/* CefLoadHandler */
+ 	virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) override;
+ 
++	virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
++				 CefLoadHandler::ErrorCode errorCode, const CefString &errorText,
++				 const CefString &failedUrl) override;
++
+ 	IMPLEMENT_REFCOUNTING(BrowserClient);
+ };
+diff --git a/plugins/obs-browser/browser-dummy-client.cpp b/plugins/obs-browser/browser-dummy-client.cpp
+new file mode 100644
+index 000000000..e891ca706
+--- /dev/null
++++ b/plugins/obs-browser/browser-dummy-client.cpp
+@@ -0,0 +1,87 @@
++/******************************************************************************
++    Copyright (C) 2026 by Matt Gajownik <matt@volunteer.obsproject.com>
++
++    This program is free software: you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 2 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program.  If not, see <http://www.gnu.org/licenses/>.
++******************************************************************************/
++
++#include "browser-dummy-client.hpp"
++
++CefRefPtr<CefCommandHandler> BrowserDummyClient::GetCommandHandler()
++{
++	return this;
++}
++
++CefRefPtr<CefRequestHandler> BrowserDummyClient::GetRequestHandler()
++{
++	return this;
++}
++
++CefRefPtr<CefLifeSpanHandler> BrowserDummyClient::GetLifeSpanHandler()
++{
++	return this;
++}
++
++bool BrowserDummyClient::OnChromeCommand(CefRefPtr<CefBrowser>, int, cef_window_open_disposition_t)
++{
++	return true;
++}
++
++bool BrowserDummyClient::IsChromeAppMenuItemVisible(CefRefPtr<CefBrowser>, int)
++{
++	return false;
++}
++
++bool BrowserDummyClient::IsChromeToolbarButtonVisible(cef_chrome_toolbar_button_type_t)
++{
++	return false;
++}
++
++bool BrowserDummyClient::IsChromePageActionIconVisible(cef_chrome_page_action_icon_type_t)
++{
++	return false;
++}
++
++bool BrowserDummyClient::IsChromeAppMenuItemEnabled(CefRefPtr<CefBrowser>, int)
++{
++	return false;
++}
++
++bool BrowserDummyClient::OnBeforePopup(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>,
++#if CHROME_VERSION_BUILD >= 6834
++				       int,
++#endif
++				       const CefString &, const CefString &, cef_window_open_disposition_t, bool,
++				       const CefPopupFeatures &, CefWindowInfo &, CefRefPtr<CefClient> &,
++				       CefBrowserSettings &, CefRefPtr<CefDictionaryValue> &, bool *)
++{
++	return true;
++}
++
++void BrowserDummyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
++{
++	if (browser && browser->GetHost()) {
++		browser->GetHost()->CloseBrowser(false);
++	}
++}
++
++bool BrowserDummyClient::OnOpenURLFromTab(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, const CefString &,
++					  CefRequestHandler::WindowOpenDisposition, bool)
++{
++	return true;
++}
++
++bool BrowserDummyClient::OnBeforeBrowse(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefRequest>, bool, bool)
++{
++	return true;
++}
+diff --git a/plugins/obs-browser/browser-dummy-client.hpp b/plugins/obs-browser/browser-dummy-client.hpp
+new file mode 100644
+index 000000000..12cf1a531
+--- /dev/null
++++ b/plugins/obs-browser/browser-dummy-client.hpp
+@@ -0,0 +1,64 @@
++/******************************************************************************
++    Copyright (C) 2026 by Matt Gajownik <matt@volunteer.obsproject.com>
++
++    This program is free software: you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 2 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program.  If not, see <http://www.gnu.org/licenses/>.
++******************************************************************************/
++
++#pragma once
++
++#include "cef-headers.hpp"
++
++class BrowserDummyClient : public CefClient,
++			   public CefCommandHandler,
++			   public CefRequestHandler,
++			   public CefLifeSpanHandler {
++public:
++	virtual CefRefPtr<CefCommandHandler> GetCommandHandler() override;
++	virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override;
++	virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
++
++	/* CefCommandHandler */
++	virtual bool OnChromeCommand(CefRefPtr<CefBrowser> browser, int command_id,
++				     cef_window_open_disposition_t disposition) override;
++	virtual bool IsChromeAppMenuItemVisible(CefRefPtr<CefBrowser> browser, int command_id) override;
++	virtual bool IsChromeToolbarButtonVisible(cef_chrome_toolbar_button_type_t button_type) override;
++
++	virtual bool IsChromePageActionIconVisible(cef_chrome_page_action_icon_type_t icon_type) override;
++
++	virtual bool IsChromeAppMenuItemEnabled(CefRefPtr<CefBrowser> browser, int command_id) override;
++
++	/* CefLifeSpanHandler */
++	virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
++#if CHROME_VERSION_BUILD >= 6834
++				   int,
++#endif
++				   const CefString &target_url, const CefString &target_frame_name,
++				   cef_window_open_disposition_t target_disposition, bool user_gesture,
++				   const CefPopupFeatures &popupFeatures, CefWindowInfo &windowInfo,
++				   CefRefPtr<CefClient> &client, CefBrowserSettings &settings,
++				   CefRefPtr<CefDictionaryValue> &extra_info, bool *no_javascript_access) override;
++
++	virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
++
++	/* CefRequestHandler */
++	virtual bool OnOpenURLFromTab(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
++				      const CefString &target_url,
++				      CefRequestHandler::WindowOpenDisposition target_disposition,
++				      bool user_gesture) override;
++
++	virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
++				    CefRefPtr<CefRequest> request, bool user_gesture, bool is_redirect) override;
++
++	IMPLEMENT_REFCOUNTING(BrowserDummyClient);
++};
+diff --git a/plugins/obs-browser/cmake/os-linux.cmake b/plugins/obs-browser/cmake/os-linux.cmake
+index 791ec01b9..4e636e0e5 100644
+--- a/plugins/obs-browser/cmake/os-linux.cmake
++++ b/plugins/obs-browser/cmake/os-linux.cmake
+@@ -14,7 +14,8 @@ add_executable(OBS::browser-helper ALIAS browser-helper)
+ 
+ target_sources(
+   browser-helper PRIVATE # cmake-format: sortable
+-                         browser-app.cpp browser-app.hpp cef-headers.hpp obs-browser-page/obs-browser-page-main.cpp)
++                         browser-app.cpp browser-app.hpp browser-dummy-client.cpp browser-dummy-client.hpp
++                         cef-headers.hpp obs-browser-page/obs-browser-page-main.cpp)
+ 
+ target_include_directories(browser-helper PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/deps"
+                                                   "${CMAKE_CURRENT_SOURCE_DIR}/obs-browser-page")
+diff --git a/plugins/obs-browser/cmake/os-macos.cmake b/plugins/obs-browser/cmake/os-macos.cmake
+index 1ae63cfde..336e92c99 100644
+--- a/plugins/obs-browser/cmake/os-macos.cmake
++++ b/plugins/obs-browser/cmake/os-macos.cmake
+@@ -29,7 +29,8 @@ foreach(helper IN LISTS helper_suffixes)
+ 
+   target_sources(
+     ${target_name} PRIVATE # cmake-format: sortable
+-                           browser-app.cpp browser-app.hpp cef-headers.hpp obs-browser-page/obs-browser-page-main.cpp)
++                           browser-app.cpp browser-app.hpp browser-dummy-client.cpp browser-dummy-client.hpp
++                           cef-headers.hpp obs-browser-page/obs-browser-page-main.cpp)
+ 
+   target_compile_definitions(${target_name} PRIVATE ENABLE_BROWSER_SHARED_TEXTURE)
+ 
+diff --git a/plugins/obs-browser/cmake/os-windows.cmake b/plugins/obs-browser/cmake/os-windows.cmake
+index 1190c9ed8..bd7a78b14 100644
+--- a/plugins/obs-browser/cmake/os-windows.cmake
++++ b/plugins/obs-browser/cmake/os-windows.cmake
+@@ -13,8 +13,8 @@ add_executable(OBS::browser-helper ALIAS obs-browser-helper)
+ target_sources(
+   obs-browser-helper
+   PRIVATE # cmake-format: sortable
+-          browser-app.cpp browser-app.hpp cef-headers.hpp obs-browser-page.manifest
+-          obs-browser-page/obs-browser-page-main.cpp)
++          browser-app.cpp browser-app.hpp browser-dummy-client.cpp browser-dummy-client.hpp
++          cef-headers.hpp obs-browser-page.manifest obs-browser-page/obs-browser-page-main.cpp)
+ 
+ configure_file(cmake/windows/obs-module-helper.rc.in obs-browser-page.rc)
+ target_sources(obs-browser-helper PRIVATE obs-browser-page.rc)
+diff --git a/plugins/obs-browser/obs-browser-plugin.cpp b/plugins/obs-browser/obs-browser-plugin.cpp
+index 95a168c6b..239119062 100644
+--- a/plugins/obs-browser/obs-browser-plugin.cpp
++++ b/plugins/obs-browser/obs-browser-plugin.cpp
+@@ -293,6 +293,9 @@ static void BrowserInit(void)
+ 	CefString(&settings.log_file) = log_path_abs;
+ 	settings.windowless_rendering_enabled = true;
+ 	settings.no_sandbox = true;
++#if CHROME_VERSION_BUILD > 6533 && CHROME_VERSION_BUILD <= 6613
++	settings.chrome_runtime = true;
++#endif
+ 
+ 	uint32_t obs_ver = obs_get_version();
+ 	uint32_t obs_maj = obs_ver >> 24;
+@@ -341,6 +344,9 @@ static void BrowserInit(void)
+ 	settings.persist_user_preferences = 1;
+ #endif
+ 	CefString(&settings.cache_path) = conf_path_abs;
++#if CHROME_VERSION_BUILD > 6533
++	CefString(&settings.root_cache_path) = conf_path_abs;
++#endif
+ #if !defined(__APPLE__) || defined(ENABLE_BROWSER_LEGACY)
+ 	char *abs_path = os_get_abs_path_ptr(path.c_str());
+ 	CefString(&settings.browser_subprocess_path) = abs_path;
+@@ -714,8 +720,122 @@ static void check_hwaccel_support(void)
+ #endif
+ #endif
+ 
++#if CHROME_VERSION_BUILD > 6533
++static void MigrateProfileConfigDir(std::string oldDir, std::string newDir, bool makeDirs)
++{
++	namespace fs = std::filesystem;
++
++	BPtr<char> configPath = obs_module_config_path(".");
++	fs::path rootPath{configPath.Get()};
++
++	fs::path oldPath = rootPath / fs::path(oldDir);
++	fs::path newPath = rootPath / fs::path(newDir);
++
++	if (!fs::exists(oldPath)) {
++		return;
++	}
++
++	try {
++		if (makeDirs && !fs::exists(newPath)) {
++			fs::create_directories(newPath);
++		}
++		const auto copyOptions = fs::copy_options::recursive;
++		fs::copy(oldPath, newPath, copyOptions);
++	} catch (const fs::filesystem_error &error) {
++		blog(LOG_WARNING, "[obs-browser]: Error migrating cookies for '%s': %s", oldPath.c_str(), error.what());
++	}
++}
++
++static void MigrateDefaultProfileSubdirs(std::string parent, bool makeDirs)
++{
++	constexpr std::array<std::string_view, 3> kMigrationDirectories{
++		"Local Storage",
++		"Session Storage",
++		"Network",
++	};
++	constexpr std::string_view kDefaultDirectoryPrefix{"Default/"};
++
++	for (std::string_view directory : kMigrationDirectories) {
++		std::string oldDirectory{parent};
++		oldDirectory.append(directory);
++		std::string newDirectory{parent};
++		newDirectory.append(kDefaultDirectoryPrefix);
++		newDirectory.append(directory);
++
++		MigrateProfileConfigDir(oldDirectory, newDirectory, makeDirs);
++	}
++}
++
++static void MigrateToChromeRuntime()
++{
++	namespace fs = std::filesystem;
++	BPtr<char> defaultConfigPath = obs_module_config_path("Default");
++	fs::path defaultPath{defaultConfigPath.Get()};
++	// User has already previously launched with Chrome Runtime
++	if (fs::exists(defaultPath)) {
++		blog(LOG_INFO, "[obs-browser]: Chrome Runtime Default profile detected. No migration necessary.");
++		return;
++	}
++
++	BPtr<char> localPrefsConfigPath = obs_module_config_path("LocalPrefs.json");
++	fs::path localPrefs{localPrefsConfigPath.Get()};
++	// User has never launched old OBS Browser before
++	if (!fs::exists(localPrefs)) {
++		blog(LOG_DEBUG, "[obs-browser]: Alloy Runtime preferences not found. No migration necessary.");
++		return;
++	}
++
++	blog(LOG_INFO, "[obs-browser]: Migrating files to Chrome Runtime...");
++
++	try {
++		fs::create_directories(defaultPath);
++	} catch (const fs::filesystem_error &error) {
++		blog(LOG_WARNING, "[obs-browser]: Error creating Default profile: %s", error.what());
++	}
++
++	MigrateDefaultProfileSubdirs("", false);
++
++	BPtr<char> newLocalPrefsConfigPath = obs_module_config_path("Local State");
++	fs::path newLocalPrefs{newLocalPrefsConfigPath.Get()};
++	try {
++		fs::copy(localPrefs, newLocalPrefs);
++	} catch (const fs::filesystem_error &error) {
++		blog(LOG_WARNING, "[obs-browser]: Error migrating preferences: %s", error.what());
++	}
++
++	constexpr std::string_view prefix = "obs_profile_cookies";
++
++	BPtr<char> serviceProfilesPath = obs_module_config_path(prefix.data());
++	fs::path serviceProfiles{serviceProfilesPath.Get()};
++	if (fs::exists(serviceProfiles)) {
++		// User has service integration cookies that also must be copied
++		for (auto const &dir_entry : std::filesystem::directory_iterator{serviceProfiles}) {
++			if (!dir_entry.is_directory()) {
++				continue;
++			}
++			std::string name{dir_entry.path().filename().string()};
++			std::string oldDir{prefix};
++			oldDir.append("/");
++			oldDir.append(name);
++
++			std::string newDir{prefix};
++			newDir.append("_");
++			newDir.append(name);
++			MigrateProfileConfigDir(oldDir, newDir, true);
++
++			blog(LOG_INFO, "[obs-browser]: Migrated cookies for %s.", name.c_str());
++		}
++	}
++
++	blog(LOG_INFO, "[obs-browser]: Migration of browser cookies and session completed.");
++}
++#endif
++
+ bool obs_module_load(void)
+ {
++#if CHROME_VERSION_BUILD > 6533
++	MigrateToChromeRuntime();
++#endif
+ #ifdef ENABLE_BROWSER_QT_LOOP
+ 	qRegisterMetaType<MessageTask>("MessageTask");
+ #endif
+diff --git a/plugins/obs-browser/panel/browser-panel-client.cpp b/plugins/obs-browser/panel/browser-panel-client.cpp
+index 91b4ee0b7..fba926b0c 100644
+--- a/plugins/obs-browser/panel/browser-panel-client.cpp
++++ b/plugins/obs-browser/panel/browser-panel-client.cpp
+@@ -38,6 +38,13 @@ CefRefPtr<CefDisplayHandler> QCefBrowserClient::GetDisplayHandler()
+ 	return this;
+ }
+ 
++#if CHROME_VERSION_BUILD >= 6533
++CefRefPtr<CefCommandHandler> QCefBrowserClient::GetCommandHandler()
++{
++	return this;
++}
++#endif
++
+ CefRefPtr<CefRequestHandler> QCefBrowserClient::GetRequestHandler()
+ {
+ 	return this;
+@@ -68,10 +75,18 @@ CefRefPtr<CefJSDialogHandler> QCefBrowserClient::GetJSDialogHandler()
+ 	return this;
+ }
+ 
++/* CefCommandHandler */
++#if CHROME_VERSION_BUILD >= 6533
++bool QCefBrowserClient::OnChromeCommand(CefRefPtr<CefBrowser>, int, cef_window_open_disposition_t)
++{
++	return true;
++}
++#endif
++
+ /* CefDisplayHandler */
+ void QCefBrowserClient::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title)
+ {
+-	if (widget && widget->cefBrowser->IsSame(browser)) {
++	if (widget && widget->cefBrowser && widget->cefBrowser->IsSame(browser)) {
+ 		std::string str_title = title;
+ 		QString qt_title = QString::fromUtf8(str_title.c_str());
+ 		QMetaObject::invokeMethod(widget, "titleChanged", Q_ARG(QString, qt_title));
+diff --git a/plugins/obs-browser/panel/browser-panel-client.hpp b/plugins/obs-browser/panel/browser-panel-client.hpp
+index 417021fa9..ea44000b0 100644
+--- a/plugins/obs-browser/panel/browser-panel-client.hpp
++++ b/plugins/obs-browser/panel/browser-panel-client.hpp
+@@ -7,6 +7,9 @@
+ 
+ class QCefBrowserClient : public CefClient,
+ 			  public CefDisplayHandler,
++#if CHROME_VERSION_BUILD >= 6533
++			  public CefCommandHandler,
++#endif
+ 			  public CefRequestHandler,
+ 			  public CefLifeSpanHandler,
+ 			  public CefContextMenuHandler,
+@@ -26,6 +29,9 @@ class QCefBrowserClient : public CefClient,
+ 	/* CefClient */
+ 	virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override;
+ 	virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override;
++#if CHROME_VERSION_BUILD >= 6533
++	virtual CefRefPtr<CefCommandHandler> GetCommandHandler() override;
++#endif
+ 	virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override;
+ 	virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
+ 	virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override;
+@@ -33,6 +39,12 @@ class QCefBrowserClient : public CefClient,
+ 	virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override;
+ 	virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override;
+ 
++	/* CefCommandHandler */
++#if CHROME_VERSION_BUILD >= 6533
++	virtual bool OnChromeCommand(CefRefPtr<CefBrowser> browser, int command_id,
++				     cef_window_open_disposition_t disposition) override;
++#endif
++
+ 	/* CefDisplayHandler */
+ 	virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) override;
+ 
+diff --git a/plugins/obs-browser/panel/browser-panel.cpp b/plugins/obs-browser/panel/browser-panel.cpp
+index b3fbe289d..2f4193212 100644
+--- a/plugins/obs-browser/panel/browser-panel.cpp
++++ b/plugins/obs-browser/panel/browser-panel.cpp
+@@ -368,6 +368,10 @@ void QCefWidgetInternal::resizeEvent(QResizeEvent *event)
+ 
+ void QCefWidgetInternal::Resize()
+ {
++	if (os_event_try(cef_started_event) != 0) {
++		return;
++	}
++
+ 	QSize size = this->size() * devicePixelRatioF();
+ 
+ 	bool success = QueueCEFTask([this, size]() {
+@@ -550,10 +554,31 @@ QCefWidget *QCefInternal::create_widget(QWidget *parent, const std::string &url,
+ 	return new QCefWidgetInternal(parent, url, cmi ? cmi->rc : nullptr);
+ }
+ 
++namespace {
++std::string getUpdatedCookiePath(std::string storagePath)
++{
++	constexpr std::string_view searchToken{"obs_profile_cookies/"};
++	constexpr std::string_view replaceToken{"obs_profile_cookies_"};
++
++	size_t pos = storagePath.find(searchToken);
++	if (pos != std::string::npos) {
++		storagePath.replace(pos, searchToken.length(), replaceToken);
++	}
++
++	return storagePath;
++}
++} // namespace
++
+ QCefCookieManager *QCefInternal::create_cookie_manager(const std::string &storage_path, bool persist_session_cookies)
+ {
++	std::string path = storage_path;
++#if CHROME_VERSION_BUILD > 6533
++	// TODO: Update obs-studio to use the new path structure due to subdirectories not being supported by CEF
++	// https://github.com/obsproject/obs-studio/issues/13498
++	path = getUpdatedCookiePath(storage_path);
++#endif
+ 	try {
+-		return new QCefCookieManagerInternal(storage_path, persist_session_cookies);
++		return new QCefCookieManagerInternal(path, persist_session_cookies);
+ 	} catch (const char *error) {
+ 		blog(LOG_ERROR, "Failed to create cookie manager: %s", error);
+ 		return nullptr;
+@@ -562,7 +587,13 @@ QCefCookieManager *QCefInternal::create_cookie_manager(const std::string &storag
+ 
+ BPtr<char> QCefInternal::get_cookie_path(const std::string &storage_path)
+ {
+-	BPtr<char> rpath = obs_module_config_path(storage_path.c_str());
++	std::string path = storage_path;
++#if CHROME_VERSION_BUILD > 6533
++	// TODO: Update obs-studio to use the new path structure due to subdirectories not being supported by CEF
++	// https://github.com/obsproject/obs-studio/issues/13498
++	path = getUpdatedCookiePath(storage_path);
++#endif
++	BPtr<char> rpath = obs_module_config_path(path.c_str());
+ 	return os_get_abs_path_ptr(rpath.Get());
+ }
+ 
+
+From 7b30bf52d679b0410a809ee7aee2572d8e7f34a7 Mon Sep 17 00:00:00 2001
+From: Matt Gajownik <matt@obsproject.com>
+Date: Sun, 28 Jun 2026 13:46:41 +1000
+Subject: [PATCH 2/3] Use constexpr for disabled command line features
+
+---
+ browser-app.cpp | 47 +++++++++++++++++++++++++----------------------
+ 1 file changed, 25 insertions(+), 22 deletions(-)
+
+diff --git a/plugins/obs-browser/browser-app.cpp b/plugins/obs-browser/browser-app.cpp
+index 3f091973b..6e8071425 100644
+--- a/plugins/obs-browser/browser-app.cpp
++++ b/plugins/obs-browser/browser-app.cpp
+@@ -38,6 +38,12 @@
+ 	}
+ #endif
+ 
++#ifdef _WIN32
++constexpr bool kIsPlatformWindows = true;
++#else
++constexpr bool kIsPlatformWindows = false;
++#endif
++
+ CefRefPtr<CefRenderProcessHandler> BrowserApp::GetRenderProcessHandler()
+ {
+ 	return this;
+@@ -125,30 +131,26 @@ void BrowserApp::OnBeforeCommandLineProcessing(const CefString &, CefRefPtr<CefC
+ 		}
+ 	}
+ 
++	// See https://github.com/chromiumembedded/cef/issues/3966 for 'StorageNotificationService' requirement.
++	constexpr std::string_view kDefaultDisabledFeatures{
++		"CalculateNativeWinOcclusion,HardwareMediaKeyHandling,LiveCaption,"
++		"MediaRouter,StorageNotificationService,WebBluetooth,"
++		"EnableWindowsGamingInputDataFetcher"};
++
++	std::string disableFeatures{};
++
++	if constexpr (kIsPlatformWindows) {
++		disableFeatures.append(kDefaultDisabledFeatures);
++	} else {
++		constexpr std::string_view kWindowsFeature{",EnableWindowsGamingInputDataFetcher"};
++		constexpr size_t kNonWindowsLength = kDefaultDisabledFeatures.size() - kWindowsFeature.size();
++		disableFeatures.append(kDefaultDisabledFeatures.substr(0, kNonWindowsLength));
++	}
++
+ 	if (command_line->HasSwitch("disable-features")) {
+ 		// Don't override existing, as this can break OSR
+-		std::string disableFeatures = command_line->GetSwitchValue("disable-features");
+-		disableFeatures += ",HardwareMediaKeyHandling";
+-#ifdef _WIN32
+-		disableFeatures += ",EnableWindowsGamingInputDataFetcher";
+-#endif
+-		disableFeatures += ",WebBluetooth";
+-		disableFeatures += ",MediaRouter";
+-		disableFeatures += ",CalculateNativeWinOcclusion";
+-		disableFeatures += ",LiveCaption";
+-		// https://github.com/chromiumembedded/cef/issues/3966
+-		disableFeatures += ",StorageNotificationService";
+-		command_line->AppendSwitchWithValue("disable-features", disableFeatures);
+-	} else {
+-		command_line->AppendSwitchWithValue("disable-features", "WebBluetooth,"
+-#ifdef _WIN32
+-									"EnableWindowsGamingInputDataFetcher,"
+-#endif
+-									"MediaRouter,"
+-									"CalculateNativeWinOcclusion,"
+-									"LiveCaption,"
+-									"StorageNotificationService,"
+-									"HardwareMediaKeyHandling");
++		disableFeatures.append(",");
++		disableFeatures.append(command_line->GetSwitchValue("disable-features"));
+ 	}
+ 
+ 	if (command_line->HasSwitch("disable-blink-features")) {
+@@ -161,6 +163,7 @@ void BrowserApp::OnBeforeCommandLineProcessing(const CefString &, CefRefPtr<CefC
+ 
+ 	command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
+ 	command_line->AppendSwitch("disable-extensions");
++	command_line->AppendSwitchWithValue("disable-features", disableFeatures);
+ 	command_line->AppendSwitch("hide-crash-restore-bubble");
+ #ifdef __APPLE__
+ 	command_line->AppendSwitch("use-mock-keychain");
+
+From d94419ffae5b55f5440a84efb00aff813848bb73 Mon Sep 17 00:00:00 2001
+From: Matt Gajownik <matt@obsproject.com>
+Date: Wed, 9 Sep 2026 20:59:09 +1000
+Subject: [PATCH 3/3] Disable global shortcuts portal integration
+
+---
+ browser-app.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/obs-browser/browser-app.cpp b/plugins/obs-browser/browser-app.cpp
+index 6e8071425..7655440e3 100644
+--- a/plugins/obs-browser/browser-app.cpp
++++ b/plugins/obs-browser/browser-app.cpp
+@@ -133,7 +133,7 @@ void BrowserApp::OnBeforeCommandLineProcessing(const CefString &, CefRefPtr<CefC
+ 
+ 	// See https://github.com/chromiumembedded/cef/issues/3966 for 'StorageNotificationService' requirement.
+ 	constexpr std::string_view kDefaultDisabledFeatures{
+-		"CalculateNativeWinOcclusion,HardwareMediaKeyHandling,LiveCaption,"
++		"CalculateNativeWinOcclusion,GlobalShortcutsPortal,HardwareMediaKeyHandling,LiveCaption,"
+ 		"MediaRouter,StorageNotificationService,WebBluetooth,"
+ 		"EnableWindowsGamingInputDataFetcher"};
+ 

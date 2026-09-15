@@ -15,9 +15,9 @@
 %bcond webrtc 0
 %endif
 
-%global version_cef 6533
+%global version_cef 7871
 # use {nil} when not required
-%global version_cef_v _v6
+%global version_cef_v %{nil}
 #global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        32.2.2
+Version:        32.2.2^1.CEF_update
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -50,6 +50,9 @@ Patch0:         obs-studio-fix-build-against-qt-6-10.patch
 # Feature patches
 Patch100:       10136.patch
 Patch101:       13157.patch
+
+Patch201:       browser-517.patch
+Patch202:       browser-523.patch
 
 # PipeWire capture bugfix
 Patch1000:      13673.patch
@@ -251,6 +254,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Tue Sep 15 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.2^1.CEF_update-11
+- Bumped CEF version to 7871
+  - includes required obs-browser PR#517 and PR#523
+
 * Fri Aug 14 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.2-11
 - Update to 32.2.2
 

@@ -1,0 +1,63 @@
+From 441ee7b75b1090943e1008981d2503aee3a5780c Mon Sep 17 00:00:00 2001
+From: Hoshino Lina <lina@lina.yt>
+Date: Sat, 7 Mar 2026 20:42:22 +0900
+Subject: [PATCH] Update to C++20
+
+Current CEF requires compiling as C++20.
+---
+ CMakeLists.txt         | 2 +-
+ cmake/os-linux.cmake   | 1 +
+ cmake/os-macos.cmake   | 2 ++
+ cmake/os-windows.cmake | 1 +
+ 4 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/obs-browser/CMakeLists.txt b/plugins/obs-browser/CMakeLists.txt
+index 0853ac0c2..0139b4c1c 100644
+--- a/plugins/obs-browser/CMakeLists.txt
++++ b/plugins/obs-browser/CMakeLists.txt
+@@ -42,7 +42,7 @@ target_sources(
+ 
+ target_include_directories(obs-browser PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/deps")
+ 
+-target_compile_features(obs-browser PRIVATE cxx_std_17)
++target_compile_features(obs-browser PRIVATE cxx_std_20)
+ target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::frontend-api OBS::websocket-api nlohmann_json::nlohmann_json)
+ 
+ if(OS_WINDOWS)
+diff --git a/plugins/obs-browser/cmake/os-linux.cmake b/plugins/obs-browser/cmake/os-linux.cmake
+index f74797a62..791ec01b9 100644
+--- a/plugins/obs-browser/cmake/os-linux.cmake
++++ b/plugins/obs-browser/cmake/os-linux.cmake
+@@ -19,6 +19,7 @@ target_sources(
+ target_include_directories(browser-helper PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/deps"
+                                                   "${CMAKE_CURRENT_SOURCE_DIR}/obs-browser-page")
+ 
++target_compile_features(browser-helper PRIVATE cxx_std_20)
+ target_link_libraries(browser-helper PRIVATE CEF::Wrapper CEF::Library)
+ 
+ target_sources(obs-browser PRIVATE deps/ip-string-posix.cpp)
+diff --git a/plugins/obs-browser/cmake/os-macos.cmake b/plugins/obs-browser/cmake/os-macos.cmake
+index 6d6dc51c8..a125a3af8 100644
+--- a/plugins/obs-browser/cmake/os-macos.cmake
++++ b/plugins/obs-browser/cmake/os-macos.cmake
+@@ -35,6 +35,8 @@ foreach(helper IN LISTS helper_suffixes)
+ 
+   target_compile_definitions(${target_name} PRIVATE ENABLE_BROWSER_SHARED_TEXTURE)
+ 
++  target_compile_features(${target_name} PRIVATE cxx_std_20)
++
+   if(CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 14.0.3)
+     target_compile_options(${target_name} PRIVATE -Wno-error=unqualified-std-cast-call)
+   endif()
+diff --git a/plugins/obs-browser/cmake/os-windows.cmake b/plugins/obs-browser/cmake/os-windows.cmake
+index 1484ea7d7..224dec0da 100644
+--- a/plugins/obs-browser/cmake/os-windows.cmake
++++ b/plugins/obs-browser/cmake/os-windows.cmake
+@@ -18,6 +18,7 @@ target_include_directories(obs-browser-helper PRIVATE "${CMAKE_CURRENT_SOURCE_DI
+ 
+ target_compile_options(obs-browser-helper PRIVATE $<IF:$<CONFIG:DEBUG>,/MTd,/MT>)
+ target_compile_definitions(obs-browser-helper PRIVATE ENABLE_BROWSER_SHARED_TEXTURE)
++target_compile_features(obs-browser-helper PRIVATE cxx_std_20)
+ 
+ target_link_libraries(obs-browser-helper PRIVATE CEF::Wrapper CEF::Library nlohmann_json::nlohmann_json)
+ target_link_options(obs-browser-helper PRIVATE /IGNORE:4099 /SUBSYSTEM:WINDOWS)
