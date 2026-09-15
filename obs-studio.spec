@@ -15,9 +15,9 @@
 %bcond webrtc 0
 %endif
 
-%global version_cef 6533
+%global version_cef 7871
 # use {nil} when not required
-%global version_cef_v _v6
+%global version_cef_v %{nil}
 #global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        32.2.2
+Version:        33.0.0~beta4
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -50,9 +50,6 @@ Patch0:         obs-studio-fix-build-against-qt-6-10.patch
 # Feature patches
 Patch100:       10136.patch
 Patch101:       13157.patch
-
-# PipeWire capture bugfix
-Patch1000:      13673.patch
 
 BuildRequires:  gcc
 BuildRequires:  cmake >= 3.0 extra-cmake-modules
@@ -236,7 +233,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_datadir}/applications/com.obsproject.Studio.desktop
 %{_datadir}/icons/hicolor/*/apps/com.obsproject.Studio.*
 %{_datadir}/obs/
-%{_libdir}/obs-plugins/
+%{_libdir}/obs-modules/
 %{_libdir}/obs-scripting/
 # unversioned so files packaged for third-party plugins (cf. rfbz#5999)
 %{_libdir}/*.so
@@ -251,6 +248,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Sat Sep 26 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.0~beta4-11
+- Update to 33.0.0~beta4
+  - adjust files for new obs-modules path
+- Bumped CEF version to 7871
+
 * Fri Aug 14 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.2-11
 - Update to 32.2.2
 
