@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        33.0.0~beta4
+Version:        33.0.0~beta5
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -248,10 +248,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Thu Oct 01 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.0~beta5-11
+- Update to 33.0.0~beta5
+
 * Sat Sep 26 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.0~beta4-11
 - Update to 33.0.0~beta4
-  - adjust files for new obs-modules path
+  - Changed plugin path to new core-modules path
 - Bumped CEF version to 7871
+- Removed PR#13673
 
 * Fri Aug 14 2026 Tarulia <mihawk.90+git@googlemail.com> - 32.2.2-11
 - Update to 32.2.2
