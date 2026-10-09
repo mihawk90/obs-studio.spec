@@ -58,7 +58,8 @@ tar --exclude-vcs -czf ./f_downloads/obs-studio-$mver.tar.gz ./obs-studio
 spectool -g $spec --directory ./f_downloads --define "_target_cpu $arch"
 cp *.patch ./f_downloads
 rm -rf ./f_upload/$frel/$arch/
-mock -r fedora+rpmfusion_nonfree-$frel-$arch --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/$arch/ --rootdir=$(pwd)/mock_root/
+systemd-inhibit --who=Mock --why='build running' \
+	mock -r fedora+rpmfusion_nonfree-$frel-$arch --sources=./f_downloads --spec=$spec --resultdir=./f_upload/$frel/$arch/ --rootdir=$(pwd)/mock_root/
 
 pushd ./f_upload/$frel/$arch && \
 sha512sum obs-studio-$mver-$rver.fc$frel.$arch.rpm obs-studio-devel-$mver-$rver.fc$frel.$arch.rpm > obs-studio-$mver-$rver.fc$frel.sha512 && \
