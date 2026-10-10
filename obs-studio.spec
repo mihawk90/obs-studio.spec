@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        33.0.0~beta6
+Version:        33.0.0~rc1
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -85,7 +85,12 @@ BuildRequires:  libxkbcommon-devel
 BuildRequires:  luajit-devel
 %endif
 BuildRequires:  mbedtls-devel
+# 13.0 headers for 10-series support
+%if 0%{?fedora} < 45
 BuildRequires:  nv-codec-headers
+%else
+BuildRequires:  nv-codec-headers13.0
+%endif
 # oneVPL was renamed to libvpl to match upstream and is only available on x86_64
 %ifarch %{x86_64}
 %if 0%{?fedora} < 42
@@ -248,6 +253,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Fri Oct 09 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.0~rc1-11
+- Update to 33.0.0~rc1
+- use nv-codec-headers13.0 on F45+
+
 * Sat Oct 03 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.0~beta6-11
 - Update to 33.0.0~beta6
 
