@@ -6,6 +6,11 @@ pushd obs-studio
 git reset --hard
 git checkout master
 git pull
+echo "git pull exit: $?"
+if [[ "$?" != 0 ]]; then
+	echo 'git pull failed'
+	exit 1
+fi
 obsVer=$(git tag --list --sort=taggerdate | tail -n1)
 git checkout $obsVer
 git submodule update --init --recursive
