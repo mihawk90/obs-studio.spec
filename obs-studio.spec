@@ -17,7 +17,7 @@
 
 %global version_cef 7871
 # use {nil} when not required
-%global version_cef_v %{nil}
+%global version_cef_v _v2
 #global version_aja v16.2-bugfix5
 
 %ifarch %{power64}
@@ -28,7 +28,7 @@
 %endif
 
 Name:           obs-studio
-Version:        33.0.1
+Version:        33.0.2
 Release:        11%{?dist}
 Summary:        Open Broadcaster Software Studio
 
@@ -253,6 +253,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %{_includedir}/obs/
 
 %changelog
+* Fri Nov 20 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.2-11
+- Update to 33.0.2
+- Use v2 CEF tarball
+
 * Sat Nov 07 2026 Tarulia <mihawk.90+git@googlemail.com> - 33.0.1-11
 - Update to 33.0.1
 
